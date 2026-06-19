@@ -1,0 +1,546 @@
+Oral cancer does not appear suddenly. It usually develops over years through a series of genetic and cellular changes, often triggered by risk factors such as tobacco, smoking, gutkha, betel nut (supari), alcohol, HPV infection, chronic irritation, and poor oral hygiene.
+
+Here's the progression from a single cell to widespread oral cancer:
+
+## 1. Normal Oral Cells
+
+The lining of your mouth is made of millions of squamous epithelial cells.
+
+![Image](https://images.openai.com/static-rsc-4/_z1zdcd8u_fZ3ACdFhB2uJxmJXumemuOxgtv9-IVQJZST8PKA5vDjJ58pKxiMuEfGiD_nktKf9nAcGMfVU4muCUwm9KZVNX_pPLIl91zpB8wWxWaYW4Imo2d5QyRLFhm-wKHkGZpSifdBhtE2cu0z7ycfXCiNTabrv_7QbWzhOg__WPJCUVvgWwa8caHAlE9?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/Q2g2APe9Xuge3rybK-SLe-G0gdiRAxIXnTSFr4kdFJQvD0BVGcnTsabzaPXFDj6aE5jEhS8ZFerG6va41_QEQoMHLScRwbPwAP8NXTHzTsNgl2WLrHPXGvEMagyrv9iw81N9qOPgMO1PBfJuz1adfSyf-WlPy-e-n1w1R9tIzwGXr03R5WUw29oYGV9neomb?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/sC6BT3aQX1g1oafnEN4sS4NuJJH2w6eTL5F4mSe8E6cCyBajCIuYww_zPEiLu41hngsiXA697ZrzPuncjWQtRarCCFfLyV_veQQitN3X39dkAQ_tNoiABe50zD5ud-nz6o4ZVUay8WrPcgfkKFKBnJt179psK6ujUyzh5H2OV2CbE40y82_1n-vwBiX_cT5W?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/nnDyz6ZYLXuNJTJfrL9qoVb1PF2thY_C5KvjK2gP3Qeq8DXsCLnMzqLrJZbiOZ-Q3dy2YGDy-U8bRqEnTVE4ubEBOZKvNkLnFbzXZCyc_Kt4MH-f6ccMF1URjSzIUnEzd97aKX32XOIDX3m485xv2GWXDe8-MlCvYaO-zm8B-xIDBwJuhbPhQ_PhgAAL0bvb?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/eKiDnyKz5WR-lCbN5zzooEbpWNTVgBOzclfK9jXmwuOzM_I4uHVYEPTMwpxrFG71iuORxEdTks1w1WxQSBc5vhR9qOC65DTngFQzRfNf1jfalEBNY_ACK464QTHPMz37TJShc4RCKIuNGHztBqAuyEVjMucjkR4j2Fe8jthsIVioTIwS6ECzIKDIPwiv15X5?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/m6okacDJBE55AnRUUHrtK-RDB5azavHDT0_YNLj8kNvUP-gsZspmWFblEsJgO3j51ynEcU_RlwBYqi4lQDvYV4Nc2ezlTk-o6AFf4RFyPFo5en3qafR1CJZtfuOnnnMnLxV9KRHc4cjiRKjPAIG_4XC_0EPH4pQhVtRIA5L0pHvfjcFhtTY6M9trRUW8umay?purpose=fullsize)
+
+These cells:
+
+* Grow in an organized manner.
+* Divide only when needed.
+* Die through programmed cell death (apoptosis).
+
+DNA inside each cell controls this process.
+
+---
+
+## 2. DNA Damage Begins
+
+Exposure to carcinogens causes mutations in DNA.
+
+Examples:
+
+* Tobacco smoke contains dozens of carcinogens.
+* Gutkha and betel nut continuously irritate oral tissues.
+* Alcohol increases penetration of carcinogens.
+* HPV can introduce cancer-causing genes.
+
+Initially only **one cell** may acquire mutations.
+
+Normal Cell → Mutated Cell
+
+At this stage:
+
+* No symptoms.
+* No visible lesion.
+* Changes are microscopic.
+
+---
+
+## 3. Precancerous Changes (Dysplasia)
+
+The mutated cell keeps dividing.
+
+Instead of:
+
+```
+1 abnormal cell
+```
+
+it becomes:
+
+```
+1 → 2 → 4 → 8 → thousands
+```
+
+A patch of abnormal cells forms.
+
+Common precancerous lesions:
+
+* Leukoplakia (white patch)
+* Erythroplakia (red patch)
+
+At this stage:
+
+* Cells look abnormal under a microscope.
+* They remain above the basement membrane.
+* Treatment can often completely prevent cancer.
+
+---
+
+## 4. Carcinoma In Situ
+
+Now almost the entire thickness of the oral lining contains abnormal cells.
+
+Characteristics:
+
+* Cells are highly abnormal.
+* Rapid growth.
+* Not yet invasive.
+
+Think of it as:
+
+> Cancer cells are present, but they are still confined to the surface layer.
+
+---
+
+## 5. Invasive Oral Cancer
+
+Cancer cells break through the basement membrane.
+
+Now they can invade:
+
+* Tongue
+* Gums
+* Floor of mouth
+* Cheek lining
+* Palate
+
+![Image](https://images.openai.com/static-rsc-4/Z_0KvaGKZMh7tJ1Ld9sAV_LRv17MUaP7phyWJm0iKYmWQqkLMrk_hUNZ88nORcsVCXOEzuOo9CNmNIsvm2sEBebIPvT8IsXRkjNN5AM20VgtJExyfQmAPjGwt2NKSHhyPgY7TlFM1bfiYRwLxWh7jGd_E0tqeS8EVRXI1PiaFXHAq9OhfrvjmV_JLWeuJc5W?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/iPgMUAFrH-SI4GMAQez7x3ezHnUw1iag_zd84YQYfz561iXv_ZH0icQK3nr9pp5I2NHRwCKhcSVuxahpZotD03-XkSbjHneIkcjYXKknZ41h_74AKO9T9zYqmD1addaH0VWXWkD0sZtca0r_H3YVI1f66arHBtOzxqawKXeSwZ5Sqe9BcMrzCnp8fAitGF0j?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/WhMZo0UfqhNAHfcNU7FkpaX1n4-HfQJxEcSqykLMuXNoImWobtQo3Ot5zZyq9DBrJVtMC4R-zeCeGXhydwvtHf-624xeSGU9FXPNkpONKcOikvVVxiciRZYKRv7yAOZIlOA_ACo5DM1la9no3hcNu4YMUcj33gUDCRUSTxgADqZoYtffaHSpAn6vJkL5kN2P?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/xHhWtTCm6jcww8jGMlUT-2EOWaPBVpkU2UzRM5ArSqkWa11wwAH0I1Lx0NJztP9q469c3dxklIVsYDT4YbyguhXEi5k7ftYJXIe38v9QehEyt2dfKqoyQRTaB1JagU9UTE02bfmhs_eBBCC9CXxOAN14YE0pqoJubFDfh-jeuJbcRG3lo0a7NKouhOhdQcx4?purpose=fullsize)
+
+Once invasion occurs:
+
+* Lump or ulcer develops.
+* Pain may start.
+* Bleeding may occur.
+* Difficulty chewing or speaking can develop.
+
+This is when it is officially called **oral cancer**, most commonly Oral Squamous Cell Carcinoma.
+
+---
+
+# How It Spreads Through the Body
+
+### Local Spread
+
+Cancer grows into nearby tissues:
+
+Stage 1:
+
+```
+Small tumor
+```
+
+↓
+
+Stage 2:
+
+```
+Larger tumor
+```
+
+↓
+
+Stage 3:
+
+```
+Nearby lymph nodes involved
+```
+
+↓
+
+Stage 4:
+
+```
+Deep tissue invasion and distant spread
+```
+
+---
+
+### Lymph Node Spread
+
+Cancer cells enter lymphatic vessels.
+
+They travel to:
+
+* Neck lymph nodes
+* Submandibular nodes
+* Cervical nodes
+
+The lymph nodes become enlarged and hard.
+
+---
+
+### Distant Metastasis
+
+Some cancer cells enter the bloodstream.
+
+They can spread to:
+
+* Lungs (most common)
+* Liver
+* Bones
+
+At this point the disease becomes much harder to cure.
+
+---
+
+# What Happens to the Cells?
+
+Normal cell:
+
+```
+Controlled growth
+Normal DNA
+Normal death
+```
+
+Cancer cell:
+
+```
+Uncontrolled growth
+Mutated DNA
+Avoids cell death
+Creates new blood vessels
+Invades tissues
+Spreads to other organs
+```
+
+Cancer cells also release signals that:
+
+* Stimulate blood vessel formation (angiogenesis)
+* Suppress immune attack
+* Recruit surrounding tissues to support tumor growth
+
+---
+
+# Clinical Stages of Oral Cancer
+
+| Stage     | Description                                    |
+| --------- | ---------------------------------------------- |
+| Stage 0   | Carcinoma in situ                              |
+| Stage I   | Tumor ≤ 2 cm                                   |
+| Stage II  | Tumor 2–4 cm                                   |
+| Stage III | Larger tumor or one lymph node involved        |
+| Stage IV  | Extensive local invasion or distant metastasis |
+
+---
+
+## Why Early Detection Matters
+
+If oral cancer is detected at Stage I or II:
+
+* Cure rates can exceed 70–90%.
+
+If detected at Stage IV:
+
+* Treatment becomes much more difficult.
+* Surgery, radiation, and chemotherapy are often required.
+
+This cell-by-cell progression is one reason oral cancer is a particularly interesting disease for AI-based pathology, medical imaging, and RAG systems: there is a clear progression from normal tissue → precancer → invasive cancer that can potentially be detected much earlier through imaging and molecular analysis.
+
+
+
+
+These are some of the most important terms in oral cancer. Let’s break them down in simple language.
+
+## 1. Squamous Epithelial Cells
+
+Your mouth is lined by a thin protective layer, similar to the paint coating on a wall.
+
+The cells that make up this lining are called **squamous epithelial cells**.
+
+![Image](https://images.openai.com/static-rsc-4/4fnm-JNTNOO8x9xDnL8fwWT9gH5ZczeqyQ7ebu-Z4byAGrIW5XuURT001nZAasN2QyKBbiP6AChBFqa17n93ys_e2VhEiJpK1bkM00emNjqHsXO3oi5t_UBVN-YuXy10-spttHrGr7057-9QJER7lSM5DjZHg22Edlf7g-ZP-X59-HJlEwnVm-8NlSTX2Zt3?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/S-rRUlUprInay_9O2CM8HdXPy924icSZFOQBtt-6fVwcTfLZv3b8sflkuuNSLQWxrjN5GQYL1ZQ5WtFgz1XwUWAIOHZFO_QFL4voxJlDOBuQZQDfrwL8tc2XX05klZo84mv8TaGrvU05qjlSNN1wkPEqHG8uWAQYG3AU9HMs5OFgWL1U5-OhcUEw_-zjy5eL?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/kdT7cAgzid_M5I69Qm2ZVqeKTXUpWjN8TkA9yNYG1gMwk9C2H80y0qJ7AE3dOaAEjB25-Kq0RgZ-4rHx6V09klmri_Mitr3Kneq_fSmZCKlWK_rMxJxicCPJ2k2c2XPhb4B_nDgs4xl3pXMebe9R2YQEHnQuH1dgtXlrXNK6iZvTqZA8CAOTp-NQqyigkSeL?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/G5yUMB1GJhUZJSyZbWt9XKU9YPH3EFEN3nXER05vc2i76hbnyqww0jWOfjFffzaloUFR3FHgtlT8sNMffCHP2otDAwh9VsagA2nyMKN4FT-AYFp0j-I32gv73RbimJoyvI2FBelkJ6uUgm_tgto7pTynQFIMYs_B5FOZhB8Dig04KfG_oWaPQIJg7pOw2Y0R?purpose=fullsize)
+
+### What they do
+
+* Protect tissues underneath
+* Resist friction from chewing and speaking
+* Continuously replace old cells with new ones
+
+Since these cells divide frequently, they are the cells most likely to become cancerous in oral cancer.
+
+About 90% of oral cancers start from these cells.
+
+---
+
+## 2. Dysplasia
+
+"Dysplasia" means:
+
+> Cells are becoming abnormal, but they are not cancer yet.
+
+Imagine a classroom:
+
+### Normal Cells
+
+All students:
+
+* Sit properly
+* Wear uniform
+* Follow rules
+
+### Dysplastic Cells
+
+Some students:
+
+* Sit randomly
+* Wear different uniforms
+* Ignore rules
+
+The classroom still exists, but things are becoming disorganized.
+
+Similarly, dysplastic cells:
+
+* Have abnormal shapes
+* Grow faster than normal
+* Have DNA damage
+* Are more likely to become cancer
+
+Doctors classify dysplasia as:
+
+* Mild
+* Moderate
+* Severe
+
+The more severe it is, the higher the cancer risk.
+
+---
+
+## 3. Leukoplakia (White Patch)
+
+![Image](https://images.openai.com/static-rsc-4/UxtcqWnOWXKQw3pqDs6Jsb7KRKQ1QqVD2Pwen9JjtcwmcQZTkKYQE0mAKDS_7cGT0kfF1L7PA4sABbyHgMm9hPfAbwGQG12wd11iKUDm4cidVceF7gGu9D0OPPkcagdFWFbunB8RShrZoePergxKVv_T7yBUYI2fcn9P0CEgFYs70a8VEqxjtMTHCUx4hwb0?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/ZTdPQjwz6TZvMQI7VGVH8CgLmRzwMgWHz87hL6OYkKRPSyOgczCF-WW39PXsgVBdzEnZ1iR7_pemYpznZiFaE6rQIPi8x3zxVbMMgvw0zGi8S4ojkxcexOjSIYSA1W26MGjtZciwseuKTGYzUW0xrzmT_oGk0PNDmyFWnqfTQvy1EKxRekw0CzIJWqSEuIhn?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/2KUu4RQqYD2XltlZS2hQmrS6Cdb6aT67P6e1P7poATrMk5dMvxrCva8zjAI1rL_H1DLU99Cei-XV_AMZ4-g4HL1D0YdVEYuVDaW8_e6xCN87RfMSyGTyOxHJkwkbvt9ENH2GSW1aRSZgNcUkL0fv41V0vRG2UpQHCkF20K9qOCuXq_we8dldkIhOEf0Q-u-5?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/7QKAsiDCiJc0TTY-0hmG7x22N8CSwBF-WfL-VttfRphX1dVpRYloqueY_F2jQaBki5MdMO5GcaxAGCOFaTMHZ_rUhiXvhk_5Zkco0l6DxCcxDRlqIn5bhDhy9Vh_SsJ481gFBBAVEoMjkqFv4BfBJfy5Gt4WawwqFaHB8_tb6OG8fZYHLGKSI--H-tyTt7xQ?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/KgYDHhXUqTzQBpa21SVW9RoeRM0uBaFU_PCY7yegSI1dovWhzd-sUXr9DmG1HjcIf9HvvkFSQkIRkfTFzW2Kx2vqX5AbR05NkU-5OyhRKEnqcJ6kOy1h_h7TQ42BX6PsW2v80ry6xsTctm9Gm-Z0Sv8yOV-Ta4UYBIWw6gwxHj3rYfrEE3f5dtuieqca09qA?purpose=fullsize)
+
+### What is it?
+
+A persistent white patch inside the mouth that cannot be scraped off.
+
+Common locations:
+
+* Tongue
+* Inner cheek
+* Gums
+* Floor of mouth
+
+### Why does it occur?
+
+Often due to:
+
+* Smoking
+* Gutkha
+* Tobacco chewing
+* Betel nut (supari)
+
+### Is it cancer?
+
+Not necessarily.
+
+Many leukoplakias are harmless.
+
+However:
+
+* Some contain dysplasia.
+* Some eventually become cancer.
+
+That is why dentists often biopsy suspicious patches.
+
+---
+
+## 4. Erythroplakia (Red Patch)
+
+![Image](https://images.openai.com/static-rsc-4/dHyNyRxXSq9_Tzc7eYiHCwLT9OyoObQW8Cp-ult0Yn1zCGudlg4uerpvN7xPuc303wHILM2KRKTrrBBEabK9AJmwG_Xuv7xZoL7DzTATkEstcppNgi3Es85to7T6f6pHol6FjOEpEPf9tBpzICw-sM8NBLtUI5ruWnXnhM0PanZZxeJ-481BiIlTpl4y0Hj9?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/DNJqJabECYlAUS880Xcm0mV36eDNMhitjKgdiprEqw7fNb2N20cArMzyfe4Q8VUcoKkMKn6hkngU8d-9irwrgqjPE0FRXQtbem_M-JlzrHIOTIHJzgEHaF0tKrYgVEx8s93NMjNV0HhVTp_glKGxAYL-MgIK5ZSRISr3eNWgFiIKFbM9xXTdtXV-p1KVdxDr?purpose=fullsize)
+
+### What is it?
+
+A persistent red patch in the mouth.
+
+### Why is it important?
+
+It is usually more dangerous than leukoplakia.
+
+When biopsied:
+
+* Many cases already contain severe dysplasia.
+* Some already contain early cancer.
+
+Think of it as a stronger warning sign.
+
+---
+
+## 5. Carcinoma In Situ
+
+This term sounds complicated but can be split:
+
+* Carcinoma = cancer from epithelial cells
+* In situ = "in its original place"
+
+### What does that mean?
+
+The abnormal cells occupy the entire surface layer, but have not yet invaded deeper tissues.
+
+Imagine cracks appearing only in the paint layer of a wall.
+
+The wall underneath is still intact.
+
+Similarly:
+
+```text
+Surface layer:
+[Cancer cells]
+
+Deep tissue:
+[Normal tissue]
+```
+
+At this stage:
+
+* It has not spread.
+* Treatment success is very high.
+* It is considered the last stage before invasive cancer.
+
+---
+
+## 6. Ulcer
+
+An ulcer is an open sore.
+
+Examples:
+
+* Mouth ulcers after biting your cheek
+* Canker sores
+
+Cancer can also appear as an ulcer.
+
+### Difference
+
+Normal ulcer:
+
+* Heals in 1–2 weeks
+
+Cancerous ulcer:
+
+* Persists for weeks or months
+* May bleed
+* Often has raised or hard edges
+
+A non-healing mouth ulcer is one of the biggest warning signs of oral cancer.
+
+---
+
+## 7. Lump
+
+A lump is an abnormal mass of tissue.
+
+Cancer cells multiply:
+
+```text
+1 cell
+↓
+100 cells
+↓
+1,000 cells
+↓
+1 million cells
+```
+
+Eventually they form a visible or palpable mass.
+
+A cancer lump may:
+
+* Feel hard
+* Continue growing
+* Cause pain or difficulty chewing
+
+---
+
+## 8. Lymph Node
+
+Your body has a drainage and immune-defense network called the **lymphatic system**.
+
+Lymph nodes are small bean-shaped filters in this network.
+
+![Image](https://images.openai.com/static-rsc-4/PX6NFzf0JpBDgLEXZ_5zcRsSb_dCVN-ChCjxspxRzl0hdvQSbOSJY2y1NJANVXcH-xU8TP2U9mo4hUCusqsjsnsp9VuSOqTM1WwbmRHIq3br5MACu_49hLl4tnOJNAKE5GE9dUx28anDdf5P0vTgMxucyqdCInbRxpXWTDFgr5qHoNOfxI6d4Zvm2AK1EBJb?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/iEyjABTb23a9F4f8poKyw0VQ3dj0zE9WUzS-RHpZ1OjxRbUbbj2o4yQEl9LL1GJQMDNHgHyqjnvpkjSYaCIrjbDS7ST6IqSAWYH81o_41Sw1k2sFbSy4t2SWqDE_ul0tmtaVLbWx30v3ZGPZnGxcAmplaQlr5ZXkmw1chLuFVbCdrue-KHl6BKCQTN5lWL7t?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/uXXKNIvRWblPCK5R9FJIkO5kOrbJREaUJKi0fFtnawlc7pXsrp_cU3gqk3pq_Vhl6hHPoiQbef5zOx7_Mw_376NTgNVQxCqiCd7vDJnbjtCuuHF6rkCuA08kEmEEWrlepANhTW-m7QvNIa4KcWfAA0zXHYU8FM0Uvk6DQ99YubUFvbgPWquAbWdzBRVURR9F?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/KHbLabOnYSDucsi1DZJxs_hk5Ar3SpbVesxeIxltmGhff_u59lOnY_OXPwTw_mYOYNN6BFO0vUfBZu9syFvMUAibaTP-IwB_HJXC25yfE29OG09LU0RKyZViLEGLjnrgsek1-V2NfJuNdTdW6nyvMJYWY1uR00BoF6CXJtQ55oElADjDPiR3wnqVRZbqUU7M?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/NCmzvp7laCLLgJQqoKThEBO2Ed21Nc33tpPwgIFDVM9g0zE_37EKEU2OZEYE0xGeMQkfDMJvN9OVjHoea15BLpBAwhBNMb1nQDiZ6xfhOyvW12i5IxiBfk3jJHGJY5DCPHDD-DTT4RCW1yjNuebzySglvltmxwEoTC3ld2HQJ5cuaDwMLMSmoyZdipGRr-yf?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/unOSJLISQuFaT2welXRD7KaDyiRcFakGhAoK8lfFicDsktrWp9oQLDTsdgpwFOGZ79C1rGv0oneIPZTLZl1UDfi_LO8u3MhCoo4pL9mk9vYDLr6WktEvO1GMv7PXIy5pd3nl1aFflrWmT3AFchqBAZyVn1XAhnEiUWmbDdP_z7kfbbPk2t99leCUrnxPTHr4?purpose=fullsize)
+
+### What do they do?
+
+They:
+
+* Trap germs
+* Filter lymph fluid
+* Help immune cells fight infection
+
+### Why are they important in oral cancer?
+
+Cancer cells can break away from the tumor and travel through lymph vessels.
+
+They often reach nearby neck lymph nodes first.
+
+This is why doctors always check the neck when evaluating oral cancer.
+
+Enlarged lymph nodes may indicate:
+
+* Infection
+* Inflammation
+* Cancer spread
+
+---
+
+### The Full Progression
+
+```text
+Normal Squamous Epithelial Cell
+          ↓
+DNA Damage
+          ↓
+Dysplasia
+          ↓
+Leukoplakia / Erythroplakia
+          ↓
+Carcinoma In Situ
+          ↓
+Invasive Oral Cancer
+          ↓
+Ulcer or Lump Forms
+          ↓
+Spread to Lymph Nodes
+          ↓
+Possible Spread to Other Organs
+```
+
+This sequence is the biological pathway researchers and pathologists look for when trying to detect oral cancer as early as possible.
