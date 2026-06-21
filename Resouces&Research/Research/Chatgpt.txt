@@ -544,3 +544,60 @@ Possible Spread to Other Organs
 ```
 
 This sequence is the biological pathway researchers and pathologists look for when trying to detect oral cancer as early as possible.
+
+
+-------------------------------------Embeddings------------------------------------------
+
+What pritamdeka/S-PubMedBert-MS-MARCO Actually Is
+The name itself tells you its whole training history — worth decoding piece by piece:
+PubMedBERT — the base model. This isn't generic BERT fine-tuned on medical text afterward; it was trained from scratch on 14 million PubMed abstracts. That distinction matters a lot. A generic BERT fine-tuned on medical text still carries its original vocabulary and word associations from web text, news, books, etc. PubMedBERT's vocabulary itself was built from medical text, so words like "carcinoma," "squamous," "neoplasm," "betel," and drug names are native tokens, not broken into meaningless sub-pieces.
+S- prefix — means "Sentence" version. This is the critical technical detail from our last conversation. Plain PubMedBERT outputs one vector per token — if your abstract has 200 words, you get 200 separate vectors. That's useless for document retrieval. The "S-" variant has been specifically restructured (via a Siamese network training setup) to produce one single, meaningful vector for an entire sentence or passage. This is what makes it usable for your "compare paper embeddings to a query embedding" use case.
+MS-MARCO — this is the fine-tuning dataset, and it's the most important part for your use case specifically. MS-MARCO is a massive dataset of real search queries paired with relevant passages (originally built from Bing search logs). Training on this teaches the model: "given a question, learn what a relevant passage looks like — even if it doesn't share exact words." This is exactly your use case: a doctor asks "what causes oral cancer in South Asian populations" and your system needs to find a passage about "betel quid and areca nut as independent risk factors" — different words, same meaning.
+Put together: Vocabulary from medical text + sentence-level output + trained specifically to match questions to answers. That's why it fits your RAG system specifically, not just "medical text in general."
+
+Why Generic Models Fall Short Here
+To make this concrete, here's what would go wrong with a generic embedding model on your data:
+A general-purpose model like all-MiniLM-L6-v2 was trained on web text, Wikipedia, news. If you embed "OSCC recurrence after surgical resection with positive margins" — the model may treat "OSCC," "resection," and "margins" as somewhat rare or oddly-tokenized words, since they appear far less often in its training data than in PubMedBERT's. The resulting vector ends up less precise — it captures rough topic similarity ("this is medical, something about surgery") but loses the specific clinical relationships your retrieval depends on.
+This isn't a small effect either — published comparisons consistently show domain-specific biomedical embedding models outperforming general-purpose ones by meaningful margins on medical retrieval benchmarks, specifically because of vocabulary and concept density.
+
+The Broader Landscape — Embedding Models by Data Type
+Here's the actual decision framework, organized by what kind of content you're embedding:
+Plain Biomedical Text (your current abstracts)
+ModelTrained forBest forpritamdeka/S-PubMedBert-MS-MARCOMedical text + query-passage matchingYour current use case — locked inNeuML/pubmedbert-base-embeddingsMedical text, general sentence embeddingsAlternative if you want to A/B testncbi/MedCPT-Query-Encoder + ncbi/MedCPT-Article-EncoderSpecifically PubMed retrieval (dual-encoder)Stronger but requires two separate models (one for queries, one for documents) — more complex setupBioLORD-2023Clinical concept matching, synonym-awareBetter when queries use lay terms but documents use clinical terms (e.g., "mouth cancer" vs "oral squamous cell carcinoma")
+Full-Text Papers (Phase 2 — when you add PDFs)
+Same models work, but chunking strategy changes more than the model does. Once you have Methods/Results/Discussion sections, you'll chunk by section (as we discussed) and embed each section separately with the same PubMedBERT-MS-MARCO model. The model choice doesn't change — what changes is what text you feed it.
+Tables and Structured Data (e.g., dosage tables, statistical results tables)
+This is a genuinely different problem. Plain text embedding models handle tables poorly because they lose the row/column structure when flattened into text. For this, you'd eventually want either:
+
+Convert tables to natural-language sentences first ("Group A showed 23% recurrence at 6 months"), then embed normally, or
+Use a specialized table-embedding approach — out of scope for now, flag for later.
+
+Images (Phase 4 — figures, histopathology slides, scan images)
+This is where you need a fundamentally different model type — multimodal embeddings, not text embeddings:
+ModelWhat it doesCLIP (OpenAI) or BiomedCLIP (Microsoft)Embeds images and text into the same vector space, so you can search "find images showing squamous differentiation" and get back matching figuresGemini Vision (your existing stack)Generate a text description of the image first, then embed that description using your normal PubMedBERT pipeline — simpler, avoids needing a second vector space entirely
+For your project, I'd lean toward the Gemini Vision approach — it keeps everything in one embedding space (text), avoiding the complexity of running two different similarity search systems side-by-side.
+
+How You Actually Decide, Going Forward — A Repeatable Framework
+Here's the question sequence to run every time you add a new data type:
+
+Is it text or non-text?
+
+Text → stay in the PubMedBERT-MS-MARCO family
+Image → needs multimodal (CLIP-family) or convert-to-text-first approach
+
+
+If text, is it domain-general or domain-specific language?
+
+Medical journal text → PubMedBERT variants
+Patient-facing or lay-language text (e.g., a patient FAQ you write yourself) → general models might actually work fine here, since lay language doesn't benefit much from medical vocabulary
+
+
+Does retrieval need to match across vocabulary gaps?
+
+Doctor query vs. technical paper → MS-MARCO-style fine-tuning matters most
+Direct keyword-style lookup → less critical, plain PubMedBERT sentence embeddings would suffice
+
+
+What's the embedding dimension, and does it match your existing pgvector schema?
+
+This is the practical constraint that bites people. If you switch models mid-project, all existing vectors need re-embedding, since you can't mix 768-dim and 384-dim vectors in the same comparison. Changing models is not a config tweak — it's a full re-run of the embedding step on your entire dataset.
