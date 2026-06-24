@@ -2,7 +2,7 @@ import json
 from sentence_transformers import SentenceTransformer
 
 INPUT_FILE = "D:\project_Major\Oral-Cancer-X-AI-Integrated-Solution\data\processed\oral_cancer_papers_final.json"
-OUTPUT_FILE = "oral_cancer_papers_embedded.json"
+OUTPUT_FILE = "D:\project_Major\Oral-Cancer-X-AI-Integrated-Solution\embeddings\oral_cancer_papers_embedded.json"
 MODEL_NAME = "pritamdeka/S-PubMedBert-MS-MARCO"
 
 def build_embedding_text(paper:dict) -> str:
@@ -46,8 +46,8 @@ def main():
             "embedding": vector.tolist(),  # JSON-serializable
         })
         
-        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-            json.dump(enriched, f, ensure_ascii=False)
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+        json.dump(enriched, f, indent=2, ensure_ascii=False)
  
     print(f"Saved {len(enriched)} embedded papers to {OUTPUT_FILE}")
  
