@@ -14,7 +14,7 @@ app = FastAPI(
 
 class QueryRequest(BaseModel):
     query: str
-    top_k = int = 10
+    top_k: int = 10
 
 
 class SourceSchema(BaseModel):

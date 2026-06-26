@@ -1,15 +1,17 @@
 import os
-import google.generativeai as genai
+from google import genai
+from google.genai import types
+
+
 
 from dotenv import load_dotenv
 
 load_dotenv()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+client = genai.Client(api_key=GEMINI_API_KEY)
 MODEL_NAME = "gemini-2.5-flash"
 
-genai.configure(api_key = GEMINI_API_KEY)
-model = genai.GenerativeModel(MODEL_NAME)
 
 def build_prompt(query:str, retrieved_papers:list[dict]) -> str:
     try:
@@ -67,11 +69,11 @@ def generate_answer(query: str, retrieved_papers: list[dict]) -> str:
         print("=" * 60)
         print(prompt)
         print("=" * 60)
-        response = model.generate_content(
-            prompt,
-            generation_config=genai.GenerationConfig(
-                temperature=0.2,   # low temperature = factual, consistent answers
-                                # not creative — you want grounded medical responses
+        response = client.models.generate_content(
+            model=MODEL_NAME,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                temperature=0.2,
                 max_output_tokens=1500,
             ),
         )
