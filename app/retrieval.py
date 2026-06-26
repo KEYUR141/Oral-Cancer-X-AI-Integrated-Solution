@@ -39,6 +39,9 @@ def retrieve(query:str, top_k:int = TOP_K) -> list[dict]:
         LIMIT :top_k
         """)
 
+        papers = []
+        MIN_SIMILARITY_THRESHOLD = 0.88
+        
         with get_db() as conn:
             result = conn.execute(sql,{
                 "query_vector": query_vector,
@@ -46,9 +49,7 @@ def retrieve(query:str, top_k:int = TOP_K) -> list[dict]:
             })
             rows = result.fetchall()
 
-            papers = []
-
-            MIN_SIMILARITY_THRESHOLD = 0.88
+            
             
             for row in rows:
                 similarity = round(float(row.similarity), 4)
