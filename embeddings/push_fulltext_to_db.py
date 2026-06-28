@@ -3,8 +3,9 @@ from sqlalchemy import insert
 from db.database import get_db
 from db.models import papers_table
 
-INPUT_FILE = "data/pdfs/embeddings_chunks.json"
-
+INPUT_FILE = "data/pdfs/embedded_chunks.json"
+from sqlalchemy.dialects.postgresql import insert as pg_insert
+    
 def main():
     try:
         with open(INPUT_FILE, "r", encoding="utf-8") as f:
@@ -16,28 +17,29 @@ def main():
             inserted = 0
 
             for chunk in chunks:
-                conn.execute(
-                    insert(papers_table).values(
-                        paper_id=           chunk["paper_id"],
-                        title=              chunk["title"],
-                        abstract=           chunk["text"],    # text stored in abstract column
-                        embedding_text=     chunk["text"],
-                        embedding=          chunk["embedding"],
-                        source=             "fulltext",
-                        chunk_index=        chunk["chunk_index"],
-                        year=               None,
-                        citation_count=     0,
-                        is_open_access=     True,
-                        publication_types=  [],
-                        open_access_pdf_url=None,
-                ).prefix_with("ON CONFLICT (paper_id) DO NOTHING")
+                stmt = pg_insert(papers_table).values(
+                    paper_id=           chunk["paper_id"],
+                    title=              chunk["title"],
+                    abstract=           chunk["text"],
+                    embedding_text=     chunk["text"],
+                    embedding=          chunk["embedding"],
+                    source=             "fulltext",
+                    chunk_index=        chunk["chunk_index"],
+                    year=               None,
+                    citation_count=     0,
+                    is_open_access=     True,
+                    publication_types=  [],
+                    open_access_pdf_url=None,
+                ).on_conflict_do_nothing(
+                    index_elements=["paper_id", "source", "chunk_index"]
                 )
 
-                inserted+=1
-
+                conn.execute(stmt)
+                inserted += 1
                 if inserted % 200 == 0:
                     print(f"  Inserted {inserted}/{len(chunks)} chunks")
-            print(f"Inserted {inserted} chunks in total.")
+
+        print(f"Done. {inserted} chunks pushed to database.")
     
     except Exception as e:
         print(f"Error inserting chunks: {e}")

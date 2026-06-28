@@ -43,11 +43,11 @@ def main():
             batch_size=BATCH_SIZE,
             normalize_embeddings=True,
             show_progress_bar=False,
-        )
-        all_embeddings.extend(batch_vecs)
+            )
+            all_embeddings.extend(batch_vecs)
 
-        done = min(i + BATCH_SIZE, len(texts))
-        print(f"  Embedded {done}/{len(texts)} chunks")
+            done = min(i + BATCH_SIZE, len(texts))
+            print(f"  Embedded {done}/{len(texts)} chunks")
 
         enriched = []
         for chunk, vector in zip(all_chunks, all_embeddings):

@@ -33,8 +33,8 @@ def build_prompt(query:str, retrieved_papers:list[dict]) -> str:
             - Answer ONLY using the provided research papers below.
             - Do NOT use any knowledge outside of the provided context.
             - Cite every claim using the paper number in square brackets e.g. [1], [3].
-            - If the provided papers do not contain enough information to answer, say:
-                "The available research does not provide sufficient information on this topic."
+            -If the papers contain RELATED information but not the exact answer, provide
+                what IS available and note what specific data is missing.
             - Do NOT speculate or add information beyond what the papers state.
             - Keep the answer clear, structured, and clinically useful.
             - End your answer with a "Sources" section listing the papers you cited.
@@ -101,7 +101,7 @@ def generate_answer(query: str, retrieved_papers: list[dict]) -> str:
 if __name__ == "__main__":
     from app.retrieval import retrieve
 
-    query = "what are the risk factors for oral cancer in South Asia"
+    query = "what is the survival rate for stage 2 oral cancer"
     print(f"Query: {query}\n")
     print("Retrieving papers...")
 

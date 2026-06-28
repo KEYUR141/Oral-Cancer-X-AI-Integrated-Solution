@@ -24,19 +24,34 @@ def retrieve(query:str, top_k:int = TOP_K) -> list[dict]:
     try:
         query_vector = embed_query(query)
         sql = text("""
-            SELECT
-            paper_id,
-            title,
-            abstract,
-            year,
-            citation_count,
-            publication_types,
-            open_access_pdf_url,
-            1 - (embedding <=> CAST(:query_vector AS vector)) AS similarity
-        FROM papers
-        WHERE source = 'abstract'
-        ORDER BY embedding <=> CAST(:query_vector AS vector)
-        LIMIT :top_k
+            SELECT DISTINCT ON (p.paper_id)
+                p.paper_id,
+                p.title,
+                p.abstract,
+                COALESCE(p.year, a.year) AS year,
+                COALESCE(p.citation_count, a.citation_count) AS citation_count,
+                COALESCE(p.publication_types, a.publication_types) AS publication_types,
+                COALESCE(p.open_access_pdf_url, a.open_access_pdf_url) AS open_access_pdf_url,
+                p.similarity
+            FROM (
+                SELECT
+                    paper_id,
+                    title,
+                    abstract,
+                    year,
+                    citation_count,
+                    publication_types,
+                    open_access_pdf_url,
+                    1 - (embedding <=> CAST(:query_vector AS vector)) AS similarity
+                FROM papers
+                WHERE source IN ('abstract', 'fulltext')
+                ORDER BY embedding <=> CAST(:query_vector AS vector)
+                LIMIT :top_k
+            ) p
+            LEFT JOIN papers a
+                ON a.paper_id = p.paper_id
+                AND a.source = 'abstract'
+            ORDER BY p.paper_id, p.similarity DESC
         """)
 
         papers = []
@@ -45,7 +60,7 @@ def retrieve(query:str, top_k:int = TOP_K) -> list[dict]:
         with get_db() as conn:
             result = conn.execute(sql,{
                 "query_vector": query_vector,
-                "top_k": top_k
+                "top_k": top_k*30
             })
             rows = result.fetchall()
 
@@ -75,7 +90,7 @@ def retrieve(query:str, top_k:int = TOP_K) -> list[dict]:
 
 
 if __name__ == "__main__":
-    test_query = "My friends are bad"
+    test_query = "5 year survival rate oral squamous cell carcinoma prognosis"
     print(f"Query: {test_query}\n")
 
     results = retrieve(test_query)
