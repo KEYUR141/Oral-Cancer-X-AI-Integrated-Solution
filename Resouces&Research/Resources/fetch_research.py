@@ -1,43 +1,43 @@
-#Semantic Scholar API 
-
-
+import logging
 import requests
 import json
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)-8s | %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+logger = logging.getLogger(__name__)
+
 response = requests.get(
     "https://api.semanticscholar.org/graph/v1/paper/search/bulk",
-    params = {
-        "query": "oral squamous cell carcinoma",
-        "fields": "title,abstract,year,isOpenAccess,openAccessPdf,publicationTypes,citationCount",
-        "openAccessPdf": "",  # filters to open access only — no value needed
+    params={
+        "query":            "oral squamous cell carcinoma",
+        "fields":           "title,abstract,year,isOpenAccess,openAccessPdf,publicationTypes,citationCount",
+        "openAccessPdf":    "",
         "publicationTypes": "Review,JournalArticle,ClinicalTrial,MetaAnalysis",
-        "year": "2012-2025",
-        "fieldsOfStudy": "Medicine"
+        "year":             "2012-2025",
+        "fieldsOfStudy":    "Medicine"
     }
 )
 
 data = response.json()
-print(f"Estimated total matches: {data['total']}")
+logger.info(f"Estimated total matches: {data['total']}")
 papers = data["data"]
 
 clean_papers = [p for p in papers if p.get("abstract")]
-print(f"usable papers with abtracts:{len(clean_papers)}")
+logger.info(f"Usable papers with abstracts: {len(clean_papers)}")
 
+sorted_top_cited   = sorted(clean_papers, key=lambda p: p.get("citationCount", 0), reverse=True)[:100]
+recent_papers      = [p for p in clean_papers if p.get("year", 0) >= 2022]
+sorted_year_papers = sorted(clean_papers, key=lambda p: p.get("year", 0), reverse=True)[:50]
 
-#Top 100 cited papers
-sorted_top_cited = sorted(clean_papers, key = lambda p: p.get("citationCount", 0), reverse = True)[:100]
-
-#Recent Research Papers apart from the citation after 2022
-recent_papers = [p for p in clean_papers if p.get("year", 0) >= 2022]
-sorted_year_papers = sorted(clean_papers, key = lambda p: p.get("year", 0), reverse = True)[:50]
-
-combined = {p["paperId"]: p for p in sorted_top_cited + sorted_year_papers}
-
+combined     = {p["paperId"]: p for p in sorted_top_cited + sorted_year_papers}
 final_papers = list(combined.values())
 
-print(f"Final Dataset: {len(final_papers)} papers")
-    
+logger.info(f"Final dataset: {len(final_papers)} papers")
+
 with open("oral_cancer_papers.json", "w", encoding="utf-8") as f:
     json.dump(final_papers, f, indent=2, ensure_ascii=False)
 
-print(f"Saved {len(final_papers)} papers to oral_cancer_papers.json")
+logger.info(f"Saved {len(final_papers)} papers to oral_cancer_papers.json")

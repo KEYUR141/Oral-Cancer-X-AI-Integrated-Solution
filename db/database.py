@@ -1,10 +1,12 @@
-
 import os
 from contextlib import contextmanager
 from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
+from utils.logger import get_logger
 
-load_dotenv()  
+load_dotenv()
+
+logger = get_logger(__name__)
 
 DB_URL = (
     f"postgresql://"
@@ -42,12 +44,11 @@ def get_db():
 
 
 if __name__ == "__main__":
-    # Quick connection test: python db/database.py
     try:
         with get_db() as conn:
             result = conn.execute(text("SELECT version();"))
             version = result.fetchone()[0]
-            print("Engine connected successfully.")
-            print(f"PostgreSQL: {version}")
+            logger.info("Engine connected successfully.")
+            logger.info(f"PostgreSQL: {version}")
     except Exception as e:
-        print(f"Connection failed: {e}")
+        logger.error(f"Connection failed: {e}")

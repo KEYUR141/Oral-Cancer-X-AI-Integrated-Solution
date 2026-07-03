@@ -1,40 +1,37 @@
-from sqlalchemy import( 
-    MetaData,Table, Column,
+from sqlalchemy import (
+    MetaData, Table, Column,
     Integer, Text, Boolean, ARRAY, TIMESTAMP,
     Index, func, text
 )
-
 from pgvector.sqlalchemy import Vector
 from db.database import engine
+from utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 metadata = MetaData()
 
-papers_table = Table("papers",metadata,
+papers_table = Table("papers", metadata,
 
     Column("id",         Integer, primary_key=True, autoincrement=True),
-    Column("paper_id",   Text,    unique=True, nullable=False),  # Semantic Scholar ID
- 
-    # Content
-    Column("title",              Text,         nullable=False),
-    Column("abstract",           Text),
-    Column("year",               Integer),
-    Column("citation_count",     Integer,      default=0),
-    Column("is_open_access",     Boolean,      default=False),
-    Column("publication_types",  ARRAY(Text)),
-    Column("open_access_pdf_url",Text),
- 
-    # Embedding
-    Column("embedding_text", Text),        # exact text fed to the model
-    Column("embedding",      Vector(768)),  # 768-dim pgvector column
- 
-    # Phase tracking
+    Column("paper_id",   Text,    unique=True, nullable=False),
+
+    Column("title",               Text,        nullable=False),
+    Column("abstract",            Text),
+    Column("year",                Integer),
+    Column("citation_count",      Integer,     default=0),
+    Column("is_open_access",      Boolean,     default=False),
+    Column("publication_types",   ARRAY(Text)),
+    Column("open_access_pdf_url", Text),
+
+    Column("embedding_text", Text),
+    Column("embedding",      Vector(768)),
+
     Column("source",      Text,    default="abstract"),
     Column("chunk_index", Integer, default=0),
- 
-    # Audit
-    Column("created_at", TIMESTAMP, server_default=func.now()),
 
-    )
+    Column("created_at", TIMESTAMP, server_default=func.now()),
+)
 
 
 Index(
@@ -45,9 +42,10 @@ Index(
     postgresql_ops={"embedding": "vector_cosine_ops"},
 )
 
-Index("papers_year_idx",          papers_table.c.year)
+Index("papers_year_idx",           papers_table.c.year)
 Index("papers_citation_count_idx", papers_table.c.citation_count)
-Index("papers_source_idx",        papers_table.c.source)
+Index("papers_source_idx",         papers_table.c.source)
+
 
 def create_tables():
     try:
@@ -55,10 +53,9 @@ def create_tables():
             conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector;"))
             conn.commit()
         metadata.create_all(engine)
-        print("Tables created successfully.")
-    
+        logger.info("Tables created successfully.")
     except Exception as e:
-        print("Errro", e)
+        logger.error(f"Error creating tables: {e}")
 
 
 if __name__ == "__main__":

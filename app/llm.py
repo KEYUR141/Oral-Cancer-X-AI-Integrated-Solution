@@ -1,27 +1,27 @@
 import os
 from google import genai
 from google.genai import types
-
-
-
 from dotenv import load_dotenv
+from utils.logger import get_logger
 
 load_dotenv()
+
+logger = get_logger(__name__)
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 client = genai.Client(api_key=GEMINI_API_KEY)
 MODEL_NAME = "gemini-2.5-flash"
 
 
-def build_prompt(query:str, retrieved_papers:list[dict]) -> str:
+def build_prompt(query: str, retrieved_papers: list[dict]) -> str:
     try:
         context_blocks = []
         for i, paper in enumerate(retrieved_papers, 1):
             block = (
-            f"[{i}] {paper['title']} ({paper['year']})\n"
-            f"Similarity Score: {paper['similarity']}\n"
-            f"Abstract: {paper['abstract']}"
-        )
+                f"[{i}] {paper['title']} ({paper['year']})\n"
+                f"Similarity Score: {paper['similarity']}\n"
+                f"Abstract: {paper['abstract']}"
+            )
             context_blocks.append(block)
 
         context = "\n\n".join(context_blocks)
@@ -48,9 +48,9 @@ def build_prompt(query:str, retrieved_papers:list[dict]) -> str:
             ANSWER:"""
 
         return prompt
-    
+
     except Exception as e:
-        print(f"Error building prompt: {e}")
+        logger.error(f"Error building prompt: {e}")
         raise
 
 
@@ -63,12 +63,11 @@ def generate_answer(query: str, retrieved_papers: list[dict]) -> str:
                            "Please try rephrasing your question using clinical terminology.",
                 "sources": [],
             }
-        
+
         prompt = build_prompt(query, retrieved_papers)
 
-        print("=" * 60)
-        print(prompt)
-        print("=" * 60)
+        logger.debug(f"\n{'='*60}\n{prompt}\n{'='*60}")
+
         response = client.models.generate_content(
             model=MODEL_NAME,
             contents=prompt,
@@ -92,31 +91,28 @@ def generate_answer(query: str, retrieved_papers: list[dict]) -> str:
                 }
                 for i, p in enumerate(retrieved_papers)
             ],
-            
         }
     except Exception as e:
-        print(f"Error generating answer: {e}")
+        logger.error(f"Error generating answer: {e}")
         raise
+
 
 if __name__ == "__main__":
     from app.retrieval import retrieve
 
     query = "what is the survival rate for stage 2 oral cancer"
-    print(f"Query: {query}\n")
-    print("Retrieving papers...")
+    logger.info(f"Query: {query}")
+    logger.info("Retrieving papers...")
 
     papers = retrieve(query)
-    print(f"Retrieved {len(papers)} papers\n")
+    logger.info(f"Retrieved {len(papers)} papers")
 
-    print("Generating answer...\n")
+    logger.info("Generating answer...")
     result = generate_answer(query, papers)
 
-    
-
-    print("=" * 60)
-    print(result["answer"])
-    print("=" * 60)
-    print(f"\nSources used: {len(result['sources'])}")
+    logger.info("=" * 60)
+    logger.info(result["answer"])
+    logger.info("=" * 60)
+    logger.info(f"Sources used: {len(result['sources'])}")
     for s in result["sources"]:
-        print(f"  [{s['number']}] ({s['year']}) {s['title']}")
-        
+        logger.info(f"  [{s['number']}] ({s['year']}) {s['title']}")
