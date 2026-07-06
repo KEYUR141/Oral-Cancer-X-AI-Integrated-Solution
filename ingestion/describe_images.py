@@ -1,207 +1,134 @@
-import base64
-import io
-import json
+"""
+ingestion/extract_captions.py
+
+Extracts figure captions from downloaded PDFs using regex pattern matching.
+Figure captions are precise medical descriptions written by the researchers
+themselves — better quality than vision model descriptions for this use case.
+
+Output: data/pdfs/figure_captions.json
+
+Run:
+    python -m ingestion.extract_captions
+"""
+
 import os
-import time
-from PIL import Image
-from dotenv import load_dotenv
-from utils.logger import get_logger
+import re
+import json
+import fitz
+from sqlalchemy import text
+from db.database import get_db
 
-load_dotenv()
+# ── Config ────────────────────────────────────────────────────────────────────
+PDF_DIR     = "data/pdfs/raw"
+OUTPUT_FILE = "data/pdfs/figure_captions.json"
 
-logger = get_logger(__name__)
-
-IMAGE_DIR = "data/pdfs/images"
-OUTPUT_DIR = "data/pdfs/image_descriptions.json"
-DELAY_SECS = 4.5
-
-USE_GROQ = os.environ.get("GROQ", "").lower() == "true"
-
-GEMINI_MODEL_NAME = "gemini-2.5-flash"
-GROQ_MODEL_NAME = "meta-llama/llama-4-scout-17b-16e-instruct"
-
-if USE_GROQ:
-    from groq import Groq
-    GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
-    groq_client = Groq(api_key=GROQ_API_KEY)
-else:
-    from google import genai
-    from google.genai import types
-    GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
-    gemini_client = genai.Client(api_key=GEMINI_API_KEY)
+# ── Fetch paper metadata ──────────────────────────────────────────────────────
+def get_paper_metadata() -> dict:
+    sql = text("SELECT paper_id, title FROM papers WHERE source='abstract'")
+    with get_db() as conn:
+        rows = conn.execute(sql).fetchall()
+    return {row.paper_id: row.title for row in rows}
 
 
-VISION_PROMPT = """This image is a page from an oral cancer research paper.
+# ── Caption extractor ─────────────────────────────────────────────────────────
+def extract_captions(pdf_path: str, paper_id: str) -> list[dict]:
+    """
+    Extracts figure captions from a single PDF.
 
-First, determine if this page contains a meaningful figure (histopathology image,
-clinical photograph, CT/MRI scan, chart, graph, or diagram) or if it is mostly
-text, a publisher watermark, blank space, or decorative content.
+    Looks for patterns like:
+      - "Figure 1. Kaplan-Meier survival curve..."
+      - "Fig. 2A. Histopathology image showing..."
+      - "FIGURE 3: Clinical photograph of..."
 
-If it IS a meaningful figure, describe it using this structure:
-- Image type: (histopathology / clinical photograph / medical imaging / chart or graph / molecular diagram / other)
-- Key findings: what is visible, using precise medical terminology
-- Clinical relevance: what this image demonstrates about oral cancer
-
-If it is NOT a meaningful figure (mostly text, watermark, blank, or decorative),
-respond with exactly: "NOT_A_FIGURE"
-
-Be concise but specific. Use medical terminology where applicable."""
-
-
-def get_all_images() -> list[dict]:
-    images = []
-    for paper_id in os.listdir(IMAGE_DIR):
-        paper_dir = os.path.join(IMAGE_DIR, paper_id)
-        if not os.path.isdir(paper_dir):
-            continue
-        for filename in os.listdir(paper_dir):
-            if filename.endswith(".png"):
-                images.append({
-                    "paper_id": paper_id,
-                    "filename": filename,
-                    "path": os.path.join(paper_dir, filename),
-                })
-    return images
-
-
-def _image_to_base64(image_path: str) -> str:
-    with Image.open(image_path) as img:
-        buf = io.BytesIO()
-        img.save(buf, format="PNG")
-        return base64.b64encode(buf.getvalue()).decode("utf-8")
-
-
-def describe_with_groq(image_path: str) -> str:
-    b64 = _image_to_base64(image_path)
-    response = groq_client.chat.completions.create(
-        model=GROQ_MODEL_NAME,
-        messages=[
-            {
-                "role": "user",
-                "content": [
-                    {"type": "text", "text": VISION_PROMPT},
-                    {
-                        "type": "image_url",
-                        "image_url": {"url": f"data:image/png;base64,{b64}"},
-                    },
-                ],
-            }
-        ],
-        temperature=0.1,
-        max_tokens=400,
-    )
-    return response.choices[0].message.content.strip()
-
-
-def describe_with_gemini(image_path: str) -> str:
-    img = Image.open(image_path)
-    response = gemini_client.models.generate_content(
-        model=GEMINI_MODEL_NAME,
-        contents=[VISION_PROMPT, img],
-        config=types.GenerateContentConfig(
-            temperature=0.1,
-            max_output_tokens=400,
-        ),
-    )
-    return response.text.strip()
-
-
-def describe_image(image_path: str) -> str | None:
-    max_retries = 3
-
-    for attempt in range(max_retries):
-        try:
-            text = describe_with_groq(image_path) if USE_GROQ else describe_with_gemini(image_path)
-
-            # Clear negative — model confirmed not a figure
-            if text == "NOT_A_FIGURE" or "NOT_A_FIGURE" in text[:30]:
-                return None
-
-            # Clear positive — got a real description
-            if text and len(text.strip()) > 20:
-                return text
-
-            # Undefined — response exists but empty or too short
-            # Could be a model hiccup, retry
-            logger.warning(f"Undefined response (attempt {attempt+1}/{max_retries}) — retrying")
-            time.sleep(10)
-            continue
-
-        except Exception as e:
-            error_str = str(e)
-
-            # Temporary server issues — retry
-            if any(code in error_str for code in ["503", "429", "UNAVAILABLE", "rate_limit"]):
-                wait = (attempt + 1) * 15
-                logger.warning(f"Temporary error (attempt {attempt+1}/{max_retries}). Waiting {wait}s...")
-                time.sleep(wait)
-                continue
-
-            # Permanent error — skip
-            logger.error(f"[FAIL] permanent error: {e}")
-            return None
-
-    # All retries exhausted — status is truly undefined, skip for now
-    logger.warning(f"Undefined after {max_retries} attempts — skipping {image_path}")
-    return None
-
-
-def main():
+    Returns list of caption dicts with page number and caption text.
+    """
     try:
-        images = get_all_images()
-        results = []
-        described = 0
-        skipped = 0
-        failed = 0
-        existing_paths = set()
+        doc = fitz.open(pdf_path)
+    except Exception as e:
+        print(f"  [FAIL] Cannot open: {e}")
+        return []
 
-        provider = "Groq" if USE_GROQ else "Gemini"
-        logger.info(f"Using provider: {provider}")
+    captions = []
 
-        if os.path.exists(OUTPUT_DIR):
-            with open(OUTPUT_DIR, "r", encoding="utf-8") as f:
-                results = json.load(f)
-            existing_paths = {r["path"] for r in results}
-            logger.info(f"Loaded {len(existing_paths)} existing image descriptions.")
+    # Pattern matches "Figure X", "Fig X", "Fig. X", "FIGURE X"
+    # followed by optional letter (2A, 3B) and period/colon
+    # then captures the caption text until double newline or end
+    caption_pattern = re.compile(
+        r'(Fig(?:ure)?s?\.?\s*\d+[a-zA-Z]?[\.\:\s][^\n]{20,}(?:\n(?!Fig)[^\n]+)*)',
+        re.IGNORECASE
+    )
 
-        for i, img in enumerate(images, 1):
-            if img["path"] in existing_paths:
+    for page_num in range(len(doc)):
+        page_text = doc[page_num].get_text("text")
+
+        matches = caption_pattern.findall(page_text)
+
+        for match in matches:
+            # Clean up the caption
+            caption = match.strip()
+            caption = re.sub(r'\s+', ' ', caption)  # collapse whitespace
+            caption = caption[:600]                   # limit length
+
+            # Filter out very short matches (likely false positives)
+            if len(caption) < 40:
                 continue
 
-            logger.info(f"[{i}/{len(images)}] {img['paper_id'][:20]}... / {img['filename']}")
+            # Filter out matches that look like reference list entries
+            if caption.lower().startswith("fig") and "doi" in caption.lower():
+                continue
 
-            description = describe_image(img["path"])
+            captions.append({
+                "paper_id":    paper_id,
+                "page":        page_num + 1,
+                "caption":     caption,
+                "chunk_index": len(captions),
+            })
 
-            if description:
-                results.append({
-                    "paper_id":    img["paper_id"],
-                    "filename":    img["filename"],
-                    "path":        img["path"],
-                    "description": description,
-                })
-                described += 1
-                logger.info("[OK] Described")
-            else:
-                skipped += 1
-                logger.info("[SKIP] Not a meaningful figure")
+    doc.close()
+    return captions
 
-            if i % 10 == 0:
-                with open(OUTPUT_DIR, "w", encoding="utf-8") as f:
-                    json.dump(results, f, indent=2, ensure_ascii=False)
 
-            time.sleep(DELAY_SECS)
+# ── Main ──────────────────────────────────────────────────────────────────────
+def main():
+    metadata  = get_paper_metadata()
+    pdf_files = [f for f in os.listdir(PDF_DIR) if f.endswith(".pdf")]
 
-        with open(OUTPUT_DIR, "w", encoding="utf-8") as f:
-            json.dump(results, f, indent=2, ensure_ascii=False)
+    print(f"Found {len(pdf_files)} PDFs\n")
 
-        logger.info("=" * 50)
-        logger.info(f"Described: {described}")
-        logger.info(f"Skipped (not figures): {skipped}")
-        logger.info(f"Failed: {failed}")
-        logger.info(f"Saved to: {OUTPUT_DIR}")
+    all_captions = []
+    processed    = 0
+    skipped      = 0
 
-    except Exception as e:
-        logger.error(f"Error in main: {e}")
+    for i, filename in enumerate(pdf_files, 1):
+        paper_id = filename.replace(".pdf", "")
+        title    = metadata.get(paper_id)
+
+        if not title:
+            skipped += 1
+            continue
+
+        pdf_path = os.path.join(PDF_DIR, filename)
+        print(f"[{i}/{len(pdf_files)}] {title[:65]}...")
+
+        captions = extract_captions(pdf_path, paper_id)
+
+        # Attach title to each caption for embedding context
+        for cap in captions:
+            cap["title"] = title
+            cap["embedding_text"] = f"{title}. {cap['caption']}"
+
+        all_captions.extend(captions)
+        processed += 1
+        print(f"  [OK] {len(captions)} captions found")
+
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+        json.dump(all_captions, f, indent=2, ensure_ascii=False)
+
+    print(f"\n{'='*50}")
+    print(f"Processed:       {processed} papers")
+    print(f"Skipped:         {skipped} (not in DB)")
+    print(f"Total captions:  {len(all_captions)}")
+    print(f"Saved to:        {OUTPUT_FILE}")
 
 
 if __name__ == "__main__":
