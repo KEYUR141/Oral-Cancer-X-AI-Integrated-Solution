@@ -3,18 +3,16 @@ import time
 import requests
 from sqlalchemy import text
 from db.database import get_db
+from ingestion.config import PDF_RAW_DIR as OUTPUT_DIR
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-OUTPUT_DIR = "data/pdfs/raw"
 DELAY_SECS = 1.5
 TIMEOUT_SECS = 30
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (research project; oral cancer RAG system)"
 }
-
-os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
 def get_papers_with_pdfs() -> list[dict]:

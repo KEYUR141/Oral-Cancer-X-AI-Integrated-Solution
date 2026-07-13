@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oral Cancer RAG — Embedding Space</title>
+<style>
+ :root{--ink:#e5e7eb;--muted:#94a3b8;--line:#1f2937}
+ *{box-sizing:border-box}
+ body{font-family:-apple-system,Segoe UI,sans-serif;color:var(--ink);background:#0b0f17;margin:0;padding:24px}
+ h1{font-size:20px;margin:0 0 4px}
+ .sub{color:var(--muted);font-size:13px;margin:0 0 16px}
+ .bar{display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+ input{flex:1;min-width:220px;font:inherit;font-size:14px;padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:#111827;color:var(--ink)}
+ button{font:inherit;font-size:13px;font-weight:600;cursor:pointer;padding:9px 16px;border-radius:8px;border:1px solid var(--line);background:#111827;color:var(--muted)}
+ button:hover{border-color:#475569}
+ button.on{background:#e5e7eb;color:#0b0f17;border-color:#e5e7eb}
+ #viz{width:100%;height:640px;border-radius:14px;background:radial-gradient(120% 120% at 50% 0%,#11161f 0%,#070a0f 100%);overflow:hidden;position:relative}
+ .legend{position:absolute;left:14px;top:12px;font-size:12px;color:#cbd5e1;z-index:2}
+ .legend span{display:inline-flex;align-items:center;gap:6px;margin-right:14px}
+ .legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
+ .card{position:absolute;top:12px;right:12px;width:300px;max-width:calc(100% - 24px);background:rgba(8,11,16,.92);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:14px 16px;color:#e5e7eb;display:none;z-index:3;backdrop-filter:blur(8px)}
+ .card.on{display:block}
+ .card .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;margin-bottom:8px}
+ .card .title{font-size:15px;font-weight:700;margin:0 0 8px;line-height:1.3}
+ .card .snippet{font-size:12.5px;color:#94a3b8;line-height:1.5}
+ .card .sim{font-size:12px;color:#e5e7eb;margin-top:8px}
+ .hint{color:var(--muted);font-size:12.5px;margin-top:8px}
+ .status{color:var(--muted);font-size:12.5px;margin-left:4px}
+</style>
+</head>
+<body>
+ <h1>Embedding Space</h1>
+ <p class="sub">Every point is one abstract, full-text chunk, or figure caption in the corpus, placed by meaning (UMAP projection of the 768-dim embedding). Drag to rotate, scroll to zoom, hover a point to inspect it.</p>
+ <div class="bar">
+   <input id="q" placeholder="Search the corpus…" autocomplete="off">
+   <button id="go">Search</button>
+   <button id="vt-source" class="on" type="button">Colour by source</button>
+   <button id="vt-similarity" type="button">Colour by similarity</button>
+   <span id="status" class="status"></span>
+ </div>
+ <div id="viz">
+   <div class="legend" id="legend"></div>
+   <div class="card" id="card"></div>
+ </div>
+ <p class="hint">A distinct highlighted marker shows where your query lands in the same space, and its nearest matches light up.</p>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function(){
+ var panel = document.getElementById('viz');
+ var card  = document.getElementById('card');
+ var statusEl = document.getElementById('status');
+ if (!panel || !window.THREE) return;
+
+ function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+ function hex2rgb(h){
+   h = (h || '#94a3b8').replace('#','');
+   return [parseInt(h.substr(0,2),16)/255, parseInt(h.substr(2,2),16)/255, parseInt(h.substr(4,2),16)/255];
+ }
+
+ var H = 640, W = panel.clientWidth;
+ var scene = new THREE.Scene();
+ var camera = new THREE.PerspectiveCamera(58, W/H, 0.01, 100);
+ camera.position.set(0, 0, 2.7);
+ var renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
+ renderer.setSize(W, H);
+ renderer.setPixelRatio(Math.min(2.5, window.devicePixelRatio || 1));
+ panel.appendChild(renderer.domElement);
+
+ // crisp glowing disc sprite, reused for every point
+ var SZ = 128, cv = document.createElement('canvas'); cv.width = cv.height = SZ;
+ var g = cv.getContext('2d');
+ var grd = g.createRadialGradient(SZ/2, SZ/2, 0, SZ/2, SZ/2, SZ/2);
+ grd.addColorStop(0.00, 'rgba(255,255,255,1)');
+ grd.addColorStop(0.55, 'rgba(255,255,255,1)');
+ grd.addColorStop(1.00, 'rgba(255,255,255,0)');
+ g.fillStyle = grd; g.beginPath(); g.arc(SZ/2, SZ/2, SZ/2, 0, Math.PI*2); g.fill();
+ var tex = new THREE.Texture(cv);
+ tex.minFilter = THREE.LinearFilter; tex.magFilter = THREE.LinearFilter;
+ tex.anisotropy = 4; tex.needsUpdate = true;
+
+ var controls = null;
+ if (THREE.OrbitControls) {
+   controls = new THREE.OrbitControls(camera, renderer.domElement);
+   controls.enableDamping = true; controls.dampingFactor = 0.08; controls.enablePan = false;
+   controls.autoRotate = true; controls.autoRotateSpeed = 1.8;
+   controls.minDistance = 1.0; controls.maxDistance = 8;
+ }
+
+ var HILITE = [1.0, 1.0, 0.35];
+ var DIM    = [0.25, 0.27, 0.32];
+ var GREY   = [0.58, 0.64, 0.70];
+
+ var cloud = null, geo = null, colAttr = null;
+ var N = 0, META = [], SOURCES = {}, base = null, col = null;
+ var idToIndex = new Map();
+ var mode = 'source';
+ var activeMatches = null; // Map<index, similarity> or null
+
+ function buildLegend(){
+   var legend = document.getElementById('legend');
+   if (mode === 'similarity' && activeMatches) {
+     legend.innerHTML = '<span><i style="background:#ffff59"></i>matched, brighter = more similar</span><span><i style="background:#94a3b8"></i>rest of corpus</span>';
+     return;
+   }
+   var items = Object.keys(SOURCES).map(function(name){
+     return '<span><i style="background:' + SOURCES[name].color + '"></i>' + esc(SOURCES[name].label) + '</span>';
+   });
+   legend.innerHTML = items.join('');
+ }
+
+ function repaint(){
+   for (var i = 0; i < N; i++){
+     var r, gg, b;
+     if (mode === 'similarity' && activeMatches){
+       if (activeMatches.has(i)){
+         var sim = activeMatches.get(i);
+         var t = Math.max(0.25, sim);
+         r = HILITE[0]*t; gg = HILITE[1]*t; b = HILITE[2]*t;
+       } else {
+         r = DIM[0]; gg = DIM[1]; b = DIM[2];
+       }
+     } else {
+       r = base[3*i]; gg = base[3*i+1]; b = base[3*i+2];
+     }
+     col[3*i] = r; col[3*i+1] = gg; col[3*i+2] = b;
+   }
+   colAttr.needsUpdate = true;
+ }
+
+ function showCard(index){
+   if (index < 0 || !META[index]){ card.className = 'card'; return; }
+   var m = META[index];
+   var srcInfo = SOURCES[m.source] || {label: m.source, color: '#94a3b8'};
+   var simText = '';
+   if (activeMatches && activeMatches.has(index)){
+     simText = '<div class="sim">similarity to query: <b>' + activeMatches.get(index).toFixed(3) + '</b></div>';
+   }
+   card.innerHTML =
+     '<span class="pill" style="background:' + srcInfo.color + '26;color:' + srcInfo.color + '">' + esc(srcInfo.label) + '</span>' +
+     '<div class="title">' + esc(m.title || '') + '</div>' +
+     '<div class="snippet">' + esc(m.snippet || '') + '</div>' +
+     simText;
+   card.className = 'card on';
+ }
+
+ var ray = new THREE.Raycaster(); ray.params.Points.threshold = 0.05;
+ var mouse = new THREE.Vector2(); var hover = -1;
+
+ function setHover(index){
+   if (index === hover) return;
+   hover = index;
+   if (controls) controls.autoRotate = (index < 0 && !activeMatches);
+   showCard(index);
+ }
+
+ renderer.domElement.addEventListener('pointermove', function(e){
+   if (!cloud) return;
+   var r = renderer.domElement.getBoundingClientRect();
+   mouse.x = ((e.clientX - r.left) / r.width) * 2 - 1;
+   mouse.y = -((e.clientY - r.top) / r.height) * 2 + 1;
+   ray.setFromCamera(mouse, camera);
+   var hits = ray.intersectObject(cloud);
+   setHover(hits.length ? hits[0].index : -1);
+ });
+ renderer.domElement.addEventListener('pointerleave', function(){ setHover(-1); });
+
+ // separate marker for the query point itself
+ var queryGeo = new THREE.BufferGeometry();
+ queryGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([0,0,0]), 3));
+ var queryMat = new THREE.PointsMaterial({size:0.09, map:tex, color:0xff4d6d, transparent:true, opacity:0.95, depthWrite:false});
+ var queryPoint = new THREE.Points(queryGeo, queryMat);
+ queryPoint.visible = false;
+ scene.add(queryPoint);
+
+ fetch('/visualize/manifest').then(function(r){
+   if (!r.ok) throw new Error('manifest not ready');
+   return r.json();
+ }).then(function(manifest){
+   SOURCES = manifest.sources;
+   META = manifest.meta;
+   N = manifest.points.length;
+
+   var pos = new Float32Array(N*3);
+   base = new Float32Array(N*3);
+   col  = new Float32Array(N*3);
+
+   var idBySourceId = {};
+   Object.keys(SOURCES).forEach(function(name){ idBySourceId[SOURCES[name].id] = SOURCES[name]; });
+
+   for (var i = 0; i < N; i++){
+     var p = manifest.points[i];
+     pos[3*i] = p[0]; pos[3*i+1] = p[1]; pos[3*i+2] = p[2];
+     var srcInfo = idBySourceId[p[3]] || {color:'#94a3b8'};
+     var rgb = hex2rgb(srcInfo.color);
+     base[3*i] = rgb[0]; base[3*i+1] = rgb[1]; base[3*i+2] = rgb[2];
+     col[3*i] = rgb[0]; col[3*i+1] = rgb[1]; col[3*i+2] = rgb[2];
+     idToIndex.set(META[i].id, i);
+   }
+
+   geo = new THREE.BufferGeometry();
+   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+   colAttr = new THREE.BufferAttribute(col, 3);
+   geo.setAttribute('color', colAttr);
+   var mat = new THREE.PointsMaterial({size:0.045, map:tex, vertexColors:true, sizeAttenuation:true, transparent:true, opacity:0.8, depthWrite:false, blending:THREE.NormalBlending});
+   cloud = new THREE.Points(geo, mat);
+   scene.add(cloud);
+
+   buildLegend();
+   statusEl.textContent = N + ' points loaded';
+ }).catch(function(err){
+   statusEl.textContent = 'Could not load manifest — run the build_visualization pipeline stage first.';
+   console.error(err);
+ });
+
+ document.getElementById('vt-source').addEventListener('click', function(){
+   mode = 'source';
+   document.getElementById('vt-source').className = 'on';
+   document.getElementById('vt-similarity').className = '';
+   buildLegend(); repaint();
+ });
+ document.getElementById('vt-similarity').addEventListener('click', function(){
+   mode = 'similarity';
+   document.getElementById('vt-similarity').className = 'on';
+   document.getElementById('vt-source').className = '';
+   buildLegend(); repaint();
+ });
+
+ function runQuery(){
+   var query = document.getElementById('q').value.trim();
+   if (!query) return;
+   statusEl.textContent = 'Searching…';
+   fetch('/visualize/query', {
+     method: 'POST',
+     headers: {'Content-Type': 'application/json'},
+     body: JSON.stringify({query: query, top_k: 15})
+   }).then(function(r){
+     if (!r.ok) return r.json().then(function(e){ throw new Error(e.detail || 'request failed'); });
+     return r.json();
+   }).then(function(resp){
+     activeMatches = new Map();
+     resp.matches.forEach(function(m){
+       var idx = idToIndex.get(m.id);
+       if (idx !== undefined) activeMatches.set(idx, m.similarity);
+     });
+
+     queryPoint.geometry.attributes.position.setXYZ(0, resp.query_point[0], resp.query_point[1], resp.query_point[2]);
+     queryPoint.geometry.attributes.position.needsUpdate = true;
+     queryPoint.visible = true;
+
+     mode = 'similarity';
+     document.getElementById('vt-similarity').className = 'on';
+     document.getElementById('vt-source').className = '';
+     if (controls) controls.autoRotate = false;
+     buildLegend(); repaint();
+     statusEl.textContent = resp.matches.length + ' matches highlighted';
+   }).catch(function(err){
+     statusEl.textContent = 'Search failed: ' + err.message;
+   });
+ }
+ document.getElementById('go').addEventListener('click', runQuery);
+ document.getElementById('q').addEventListener('keydown', function(e){ if (e.key === 'Enter') runQuery(); });
+
+ function loop(){
+   requestAnimationFrame(loop);
+   if (controls) controls.update();
+   else if (cloud) cloud.rotation.y += 0.010;
+   renderer.render(scene, camera);
+ }
+ loop();
+
+ window.addEventListener('resize', function(){
+   var w = panel.clientWidth;
+   renderer.setSize(w, H);
+   camera.aspect = w / H;
+   camera.updateProjectionMatrix();
+ });
+})();
+</script>
+</body>
+</html>

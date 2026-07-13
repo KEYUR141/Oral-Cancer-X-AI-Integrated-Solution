@@ -88,6 +88,10 @@ def generate_answer(query: str, retrieved_papers: list[dict]) -> str:
                     "similarity":     p["similarity"],
                     "citation_count": p["citation_count"],
                     "pdf_url":        p.get("open_access_pdf_url"),
+                    "image_path":     (
+                        p["image_path"].replace("data/pdfs/images/", "/images/")
+                        if p.get("image_path") else None
+                    ),
                 }
                 for i, p in enumerate(retrieved_papers)
             ],

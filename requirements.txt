@@ -1,4 +1,16 @@
+fastapi
+uvicorn
+pydantic
+sqlalchemy
+psycopg2-binary
+pgvector
+sentence-transformers
+PyMuPDF
+requests
+python-dotenv
 google-genai
 groq
 pillow
-python-dotenv
+umap-learn
+scikit-learn
+joblib

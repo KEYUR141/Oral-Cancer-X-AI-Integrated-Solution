@@ -1,7 +1,10 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from app.retrieval import retrieve
 from app.llm import generate_answer
+from app.viz_routes import router as viz_router
+from app.visualize import get_umap_bundle, project_query
 from utils.logger import get_logger
 import time
 
@@ -12,6 +15,24 @@ app = FastAPI(
     description="An API for retrieving and generating answers to questions about oral cancer using a retrieval-augmented generation (RAG) approach.",
     version="1.0.0",
 )
+
+app.mount("/images", StaticFiles(directory="data/pdfs/images"), name="images")
+app.include_router(viz_router)
+
+
+EMBEDDING_DIM = 768
+
+
+@app.on_event("startup")
+def warm_up_umap():
+    # umap-learn JIT-compiles its transform on first call; pay that cost at
+    # startup instead of on whichever user's request hits it first.
+    try:
+        get_umap_bundle()
+        project_query([0.0] * EMBEDDING_DIM)
+        logger.info("UMAP model warmed up.")
+    except FileNotFoundError:
+        logger.warning("UMAP model not found — /visualize/query will fail until it's built.")
 
 
 class QueryRequest(BaseModel):
@@ -26,6 +47,7 @@ class SourceSchema(BaseModel):
     similarity: float
     citation_count: int
     pdf_url: str | None = None
+    image_path: str | None = None
 
 
 class QueryResponse(BaseModel):

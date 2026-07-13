@@ -1,7 +1,7 @@
 from sqlalchemy import (
     MetaData, Table, Column,
     Integer, Text, Boolean, ARRAY, TIMESTAMP,
-    Index, func, text
+    Index, UniqueConstraint, func, text
 )
 from pgvector.sqlalchemy import Vector
 from db.database import engine
@@ -14,7 +14,7 @@ metadata = MetaData()
 papers_table = Table("papers", metadata,
 
     Column("id",         Integer, primary_key=True, autoincrement=True),
-    Column("paper_id",   Text,    unique=True, nullable=False),
+    Column("paper_id",   Text,    nullable=False),
 
     Column("title",               Text,        nullable=False),
     Column("abstract",            Text),
@@ -23,6 +23,7 @@ papers_table = Table("papers", metadata,
     Column("is_open_access",      Boolean,     default=False),
     Column("publication_types",   ARRAY(Text)),
     Column("open_access_pdf_url", Text),
+    Column("image_path",          Text),
 
     Column("embedding_text", Text),
     Column("embedding",      Vector(768)),
@@ -31,6 +32,12 @@ papers_table = Table("papers", metadata,
     Column("chunk_index", Integer, default=0),
 
     Column("created_at", TIMESTAMP, server_default=func.now()),
+
+    # Reproduces papers_unique_chunk, which was created manually before this
+    # was tracked in the ORM. A paper can have multiple rows (abstract,
+    # fulltext chunks, figure captions), so uniqueness is per (paper_id,
+    # source, chunk_index), not on paper_id alone.
+    UniqueConstraint("paper_id", "source", "chunk_index", name="papers_unique_chunk"),
 )
 
 
