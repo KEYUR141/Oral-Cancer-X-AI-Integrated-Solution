@@ -9,6 +9,13 @@ _DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 _configured = False
 
+# These libraries emit very verbose DEBUG-level internal logging (numba dumps
+# JIT bytecode for every compiled function, httpx/httpcore log full request
+# bodies including base64 image payloads, PIL logs per-chunk decode info).
+# Silencing them keeps DEBUG capture meaningful for this project's own
+# modules without flooding the log file / crashing rollover under the volume.
+_NOISY_LOGGERS = ("numba", "httpx", "httpcore", "PIL", "urllib3", "huggingface_hub")
+
 
 def setup_logging(level: int = logging.INFO) -> None:
     global _configured
@@ -19,6 +26,9 @@ def setup_logging(level: int = logging.INFO) -> None:
 
     root = logging.getLogger()
     root.setLevel(logging.DEBUG)
+
+    for name in _NOISY_LOGGERS:
+        logging.getLogger(name).setLevel(logging.WARNING)
 
     formatter = logging.Formatter(_FORMAT, datefmt=_DATE_FORMAT)
 

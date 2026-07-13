@@ -5,33 +5,62 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Oral Cancer RAG — Embedding Space</title>
 <style>
- :root{--ink:#e5e7eb;--muted:#94a3b8;--line:#1f2937}
+ :root{--ink:#15171c;--muted:#6b7280;--line:#e5e7eb}
  *{box-sizing:border-box}
- body{font-family:-apple-system,Segoe UI,sans-serif;color:var(--ink);background:#0b0f17;margin:0;padding:24px}
- h1{font-size:20px;margin:0 0 4px}
- .sub{color:var(--muted);font-size:13px;margin:0 0 16px}
- .bar{display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
- input{flex:1;min-width:220px;font:inherit;font-size:14px;padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:#111827;color:var(--ink)}
- button{font:inherit;font-size:13px;font-weight:600;cursor:pointer;padding:9px 16px;border-radius:8px;border:1px solid var(--line);background:#111827;color:var(--muted)}
- button:hover{border-color:#475569}
- button.on{background:#e5e7eb;color:#0b0f17;border-color:#e5e7eb}
- #viz{width:100%;height:640px;border-radius:14px;background:radial-gradient(120% 120% at 50% 0%,#11161f 0%,#070a0f 100%);overflow:hidden;position:relative}
- .legend{position:absolute;left:14px;top:12px;font-size:12px;color:#cbd5e1;z-index:2}
- .legend span{display:inline-flex;align-items:center;gap:6px;margin-right:14px}
- .legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
- .card{position:absolute;top:12px;right:12px;width:300px;max-width:calc(100% - 24px);background:rgba(8,11,16,.92);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:14px 16px;color:#e5e7eb;display:none;z-index:3;backdrop-filter:blur(8px)}
+ html{width:100%;overflow-x:hidden}
+ body{font-family:-apple-system,Segoe UI,sans-serif;color:var(--ink);background:#ffffff;margin:0 auto;padding:28px 32px 48px;max-width:1180px;width:100%}
+ h1{font-size:21px;margin:0 0 5px;letter-spacing:-.01em;color:var(--ink)}
+ .sub{color:var(--muted);font-size:13px;margin:0 0 20px;max-width:760px;line-height:1.5}
+ .bar{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+ input{flex:1 1 240px;min-width:0;font:inherit;font-size:14px;padding:10px 14px;border-radius:9px;border:1px solid var(--line);background:#fff;color:var(--ink);outline:none}
+ input:focus{border-color:var(--ink)}
+ button{flex:0 0 auto;font:inherit;font-size:13px;font-weight:600;cursor:pointer;padding:10px 16px;border-radius:9px;border:1px solid var(--line);background:#fff;color:var(--muted);transition:border-color .15s,background .15s;white-space:nowrap}
+ button:hover{border-color:#9ca3af}
+ button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+ .status{color:var(--muted);font-size:12.5px;margin-left:2px;white-space:nowrap}
+ #viz{width:100%;height:640px;border-radius:16px;background:radial-gradient(120% 120% at 50% 0%,#080b12 0%,#010102 100%);overflow:hidden;position:relative;border:1px solid #131a29;touch-action:none}
+ .legend{position:absolute;left:16px;top:14px;font-size:12px;color:#b7c0d1;z-index:2;display:flex;gap:16px;flex-wrap:wrap;max-width:calc(100% - 32px)}
+ .legend span{display:inline-flex;align-items:center;gap:6px}
+ .legend i{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+ .card{position:absolute;top:14px;right:14px;width:300px;max-width:calc(100% - 28px);background:rgba(8,11,18,.94);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:16px 18px;color:#e5e7eb;display:none;z-index:3;backdrop-filter:blur(10px);box-shadow:0 14px 40px rgba(0,0,0,.5)}
  .card.on{display:block}
- .card .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;margin-bottom:8px}
- .card .title{font-size:15px;font-weight:700;margin:0 0 8px;line-height:1.3}
- .card .snippet{font-size:12.5px;color:#94a3b8;line-height:1.5}
- .card .sim{font-size:12px;color:#e5e7eb;margin-top:8px}
- .hint{color:var(--muted);font-size:12.5px;margin-top:8px}
- .status{color:var(--muted);font-size:12.5px;margin-left:4px}
+ .card .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:.02em;margin-bottom:10px}
+ .card .title{font-size:14.5px;font-weight:700;margin:0 0 8px;line-height:1.35}
+ .card .snippet{font-size:12px;color:#8b95a7;line-height:1.6}
+ .card .sim{font-size:12px;color:#e5e7eb;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08)}
+ .hint{color:var(--muted);font-size:12.5px;margin:12px 2px 0}
+ .results{margin-top:22px;display:none}
+ .results.on{display:block}
+ .results h2{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin:0 0 10px}
+ .rheader{display:flex;align-items:center;gap:10px;padding:0 14px 8px;border-bottom:1px solid var(--line);font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700}
+ .rheader .rh-title{flex:1 1 160px;min-width:0}
+ .rheader .rh-sim{flex-shrink:0;margin-left:auto}
+ .rlist{display:flex;flex-direction:column}
+ .ritem{display:flex;align-items:center;gap:10px;padding:13px 14px;background:#fff;font-size:13.5px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+ .ritem:last-child{border-bottom:none}
+ .ritem .rpill{flex-shrink:0;padding:2px 9px;border-radius:999px;font-size:10.5px;font-weight:700}
+ .ritem .rtitle{flex:1 1 160px;min-width:0;color:var(--ink);line-height:1.35}
+ .ritem .rsim{flex-shrink:0;color:var(--muted);font-variant-numeric:tabular-nums;font-size:12.5px;margin-left:auto}
+
+ @media (max-width: 720px){
+   body{padding:18px 16px 28px}
+   h1{font-size:18px}
+   .sub{font-size:12.5px;margin-bottom:16px}
+   .bar{gap:8px}
+   input{flex-basis:100%}
+   button{flex:1 1 auto;font-size:12.5px;padding:9px 12px}
+   .status{flex-basis:100%;margin-left:0}
+   #viz{height:440px;border-radius:12px}
+   .legend{font-size:10.5px;gap:10px;left:10px;top:10px}
+   .card{top:10px;right:10px;left:10px;width:auto}
+   .rheader{display:none}
+   .ritem{padding:10px 12px;font-size:12.5px}
+ }
 </style>
 </head>
 <body>
  <h1>Embedding Space</h1>
- <p class="sub">Every point is one abstract, full-text chunk, or figure caption in the corpus, placed by meaning (UMAP projection of the 768-dim embedding). Drag to rotate, scroll to zoom, hover a point to inspect it.</p>
+ <p class="sub">Every point is one abstract, full-text chunk, or figure caption in the corpus, placed by meaning &mdash; a UMAP projection of the 768-dimensional embedding down to 3D. Drag to rotate, scroll to zoom, hover a point to inspect it.</p>
  <div class="bar">
    <input id="q" placeholder="Search the corpus…" autocomplete="off">
    <button id="go">Search</button>
@@ -43,7 +72,12 @@
    <div class="legend" id="legend"></div>
    <div class="card" id="card"></div>
  </div>
- <p class="hint">A distinct highlighted marker shows where your query lands in the same space, and its nearest matches light up.</p>
+ <p class="hint">Searching drops a marker where your query lands in this same space, and its nearest matches glow.</p>
+ <div class="results" id="results">
+   <h2>Top matches</h2>
+   <div class="rheader"><span class="rh-title">Match</span><span class="rh-sim">Similarity</span></div>
+   <div class="rlist" id="rlist"></div>
+ </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -52,46 +86,51 @@
  var panel = document.getElementById('viz');
  var card  = document.getElementById('card');
  var statusEl = document.getElementById('status');
+ var resultsEl = document.getElementById('results');
+ var rlistEl = document.getElementById('rlist');
  if (!panel || !window.THREE) return;
 
  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
  function hex2rgb(h){
-   h = (h || '#94a3b8').replace('#','');
+   h = (h || '#8b95a7').replace('#','');
    return [parseInt(h.substr(0,2),16)/255, parseInt(h.substr(2,2),16)/255, parseInt(h.substr(4,2),16)/255];
  }
 
- var H = 640, W = panel.clientWidth;
+ var H = panel.clientHeight, W = panel.clientWidth;
  var scene = new THREE.Scene();
- var camera = new THREE.PerspectiveCamera(58, W/H, 0.01, 100);
- camera.position.set(0, 0, 2.7);
+ scene.fog = new THREE.FogExp2(0x010103, 0.09);
+ var camera = new THREE.PerspectiveCamera(56, W/H, 0.01, 100);
+ camera.position.set(0, 0, 2.9);
  var renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
  renderer.setSize(W, H);
  renderer.setPixelRatio(Math.min(2.5, window.devicePixelRatio || 1));
  panel.appendChild(renderer.domElement);
 
  // crisp glowing disc sprite, reused for every point
- var SZ = 128, cv = document.createElement('canvas'); cv.width = cv.height = SZ;
- var g = cv.getContext('2d');
- var grd = g.createRadialGradient(SZ/2, SZ/2, 0, SZ/2, SZ/2, SZ/2);
- grd.addColorStop(0.00, 'rgba(255,255,255,1)');
- grd.addColorStop(0.55, 'rgba(255,255,255,1)');
- grd.addColorStop(1.00, 'rgba(255,255,255,0)');
- g.fillStyle = grd; g.beginPath(); g.arc(SZ/2, SZ/2, SZ/2, 0, Math.PI*2); g.fill();
- var tex = new THREE.Texture(cv);
- tex.minFilter = THREE.LinearFilter; tex.magFilter = THREE.LinearFilter;
- tex.anisotropy = 4; tex.needsUpdate = true;
+ function makeSprite(){
+   var SZ = 128, cv = document.createElement('canvas'); cv.width = cv.height = SZ;
+   var g = cv.getContext('2d');
+   var grd = g.createRadialGradient(SZ/2, SZ/2, 0, SZ/2, SZ/2, SZ/2);
+   grd.addColorStop(0.00, 'rgba(255,255,255,1)');
+   grd.addColorStop(0.45, 'rgba(255,255,255,.9)');
+   grd.addColorStop(1.00, 'rgba(255,255,255,0)');
+   g.fillStyle = grd; g.beginPath(); g.arc(SZ/2, SZ/2, SZ/2, 0, Math.PI*2); g.fill();
+   var tex = new THREE.Texture(cv);
+   tex.minFilter = THREE.LinearFilter; tex.magFilter = THREE.LinearFilter;
+   tex.anisotropy = 4; tex.needsUpdate = true;
+   return tex;
+ }
+ var tex = makeSprite();
 
  var controls = null;
  if (THREE.OrbitControls) {
    controls = new THREE.OrbitControls(camera, renderer.domElement);
    controls.enableDamping = true; controls.dampingFactor = 0.08; controls.enablePan = false;
-   controls.autoRotate = true; controls.autoRotateSpeed = 1.8;
+   controls.autoRotate = true; controls.autoRotateSpeed = 1.4;
    controls.minDistance = 1.0; controls.maxDistance = 8;
  }
 
- var HILITE = [1.0, 1.0, 0.35];
- var DIM    = [0.25, 0.27, 0.32];
- var GREY   = [0.58, 0.64, 0.70];
+ var GREY = [0.42, 0.46, 0.53];
 
  var cloud = null, geo = null, colAttr = null;
  var N = 0, META = [], SOURCES = {}, base = null, col = null;
@@ -99,10 +138,20 @@
  var mode = 'source';
  var activeMatches = null; // Map<index, similarity> or null
 
+ // second, sparse layer: only matched points, rendered bigger + glowing
+ // (a shared PointsMaterial can't vary size per point, so matches get
+ // their own small geometry instead of trying to stand out within one
+ // uniform-sized cloud of ~4700 points)
+ var hlGeo = new THREE.BufferGeometry();
+ var hlMat = new THREE.PointsMaterial({size:0.11, map:tex, vertexColors:true, transparent:true, opacity:0.95, depthWrite:false, blending:THREE.AdditiveBlending});
+ var highlightCloud = new THREE.Points(hlGeo, hlMat);
+ highlightCloud.visible = false;
+ scene.add(highlightCloud);
+
  function buildLegend(){
    var legend = document.getElementById('legend');
    if (mode === 'similarity' && activeMatches) {
-     legend.innerHTML = '<span><i style="background:#ffff59"></i>matched, brighter = more similar</span><span><i style="background:#94a3b8"></i>rest of corpus</span>';
+     legend.innerHTML = '<span><i style="background:#ffe066"></i>matched, brighter = more similar</span><span><i style="background:#5b6577"></i>rest of corpus</span>';
      return;
    }
    var items = Object.keys(SOURCES).map(function(name){
@@ -112,28 +161,40 @@
  }
 
  function repaint(){
+   var showMatches = (mode === 'similarity' && activeMatches);
    for (var i = 0; i < N; i++){
      var r, gg, b;
-     if (mode === 'similarity' && activeMatches){
-       if (activeMatches.has(i)){
-         var sim = activeMatches.get(i);
-         var t = Math.max(0.25, sim);
-         r = HILITE[0]*t; gg = HILITE[1]*t; b = HILITE[2]*t;
-       } else {
-         r = DIM[0]; gg = DIM[1]; b = DIM[2];
-       }
+     if (showMatches){
+       r = GREY[0]; gg = GREY[1]; b = GREY[2];
      } else {
        r = base[3*i]; gg = base[3*i+1]; b = base[3*i+2];
      }
      col[3*i] = r; col[3*i+1] = gg; col[3*i+2] = b;
    }
    colAttr.needsUpdate = true;
+
+   if (showMatches){
+     var idxs = Array.from(activeMatches.keys());
+     var hlPos = new Float32Array(idxs.length * 3);
+     var hlCol = new Float32Array(idxs.length * 3);
+     idxs.forEach(function(idx, j){
+       var p = geo.attributes.position;
+       hlPos[3*j] = p.getX(idx); hlPos[3*j+1] = p.getY(idx); hlPos[3*j+2] = p.getZ(idx);
+       var t = Math.max(0.35, activeMatches.get(idx));
+       hlCol[3*j] = 1.0*t; hlCol[3*j+1] = 0.94*t; hlCol[3*j+2] = 0.4*t;
+     });
+     hlGeo.setAttribute('position', new THREE.BufferAttribute(hlPos, 3));
+     hlGeo.setAttribute('color', new THREE.BufferAttribute(hlCol, 3));
+     highlightCloud.visible = true;
+   } else {
+     highlightCloud.visible = false;
+   }
  }
 
  function showCard(index){
    if (index < 0 || !META[index]){ card.className = 'card'; return; }
    var m = META[index];
-   var srcInfo = SOURCES[m.source] || {label: m.source, color: '#94a3b8'};
+   var srcInfo = SOURCES[m.source] || {label: m.source, color: '#8b95a7'};
    var simText = '';
    if (activeMatches && activeMatches.has(index)){
      simText = '<div class="sim">similarity to query: <b>' + activeMatches.get(index).toFixed(3) + '</b></div>';
@@ -146,7 +207,7 @@
    card.className = 'card on';
  }
 
- var ray = new THREE.Raycaster(); ray.params.Points.threshold = 0.05;
+ var ray = new THREE.Raycaster(); ray.params.Points.threshold = 0.06;
  var mouse = new THREE.Vector2(); var hover = -1;
 
  function setHover(index){
@@ -162,15 +223,23 @@
    mouse.x = ((e.clientX - r.left) / r.width) * 2 - 1;
    mouse.y = -((e.clientY - r.top) / r.height) * 2 + 1;
    ray.setFromCamera(mouse, camera);
-   var hits = ray.intersectObject(cloud);
-   setHover(hits.length ? hits[0].index : -1);
+   var targets = highlightCloud.visible ? [cloud, highlightCloud] : [cloud];
+   var hits = ray.intersectObjects(targets);
+   if (!hits.length) { setHover(-1); return; }
+   var hit = hits[0];
+   if (hit.object === highlightCloud){
+     var idxs = Array.from(activeMatches.keys());
+     setHover(idxs[hit.index]);
+   } else {
+     setHover(hit.index);
+   }
  });
  renderer.domElement.addEventListener('pointerleave', function(){ setHover(-1); });
 
- // separate marker for the query point itself
+ // distinct marker for the query point itself
  var queryGeo = new THREE.BufferGeometry();
  queryGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([0,0,0]), 3));
- var queryMat = new THREE.PointsMaterial({size:0.09, map:tex, color:0xff4d6d, transparent:true, opacity:0.95, depthWrite:false});
+ var queryMat = new THREE.PointsMaterial({size:0.13, map:tex, color:0xff4d6d, transparent:true, opacity:0.95, depthWrite:false, blending:THREE.AdditiveBlending});
  var queryPoint = new THREE.Points(queryGeo, queryMat);
  queryPoint.visible = false;
  scene.add(queryPoint);
@@ -190,10 +259,12 @@
    var idBySourceId = {};
    Object.keys(SOURCES).forEach(function(name){ idBySourceId[SOURCES[name].id] = SOURCES[name]; });
 
+   var maxR = 0;
    for (var i = 0; i < N; i++){
      var p = manifest.points[i];
      pos[3*i] = p[0]; pos[3*i+1] = p[1]; pos[3*i+2] = p[2];
-     var srcInfo = idBySourceId[p[3]] || {color:'#94a3b8'};
+     maxR = Math.max(maxR, Math.sqrt(p[0]*p[0] + p[1]*p[1] + p[2]*p[2]));
+     var srcInfo = idBySourceId[p[3]] || {color:'#8b95a7'};
      var rgb = hex2rgb(srcInfo.color);
      base[3*i] = rgb[0]; base[3*i+1] = rgb[1]; base[3*i+2] = rgb[2];
      col[3*i] = rgb[0]; col[3*i+1] = rgb[1]; col[3*i+2] = rgb[2];
@@ -204,9 +275,18 @@
    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
    colAttr = new THREE.BufferAttribute(col, 3);
    geo.setAttribute('color', colAttr);
-   var mat = new THREE.PointsMaterial({size:0.045, map:tex, vertexColors:true, sizeAttenuation:true, transparent:true, opacity:0.8, depthWrite:false, blending:THREE.NormalBlending});
+   var mat = new THREE.PointsMaterial({size:0.06, map:tex, vertexColors:true, sizeAttenuation:true, transparent:true, opacity:0.85, depthWrite:false, blending:THREE.NormalBlending});
    cloud = new THREE.Points(geo, mat);
    scene.add(cloud);
+
+   // frame the camera to the actual data extent instead of a fixed guess —
+   // on a narrow (portrait phone) viewport the horizontal frustum is
+   // tighter than the vertical one, so back off further to still fit
+   // everything instead of cropping the sides
+   var fitAspect = Math.min(1, camera.aspect);
+   var dist = Math.max(1.8, Math.min(9, (maxR * 1.5) / fitAspect));
+   camera.position.set(0, 0, dist);
+   if (controls) { controls.minDistance = dist * 0.3; controls.maxDistance = dist * 3; }
 
    buildLegend();
    statusEl.textContent = N + ' points loaded';
@@ -227,6 +307,19 @@
    document.getElementById('vt-source').className = '';
    buildLegend(); repaint();
  });
+
+ function renderResultsList(matches){
+   if (!matches.length){ resultsEl.className = 'results'; return; }
+   rlistEl.innerHTML = matches.map(function(m){
+     var srcInfo = SOURCES[m.source] || {label: m.source, color: '#8b95a7'};
+     return '<div class="ritem">' +
+       '<span class="rpill" style="background:' + srcInfo.color + '26;color:' + srcInfo.color + '">' + esc(srcInfo.label) + '</span>' +
+       '<span class="rtitle">' + esc(m.title) + '</span>' +
+       '<span class="rsim">' + m.similarity.toFixed(3) + '</span>' +
+     '</div>';
+   }).join('');
+   resultsEl.className = 'results on';
+ }
 
  function runQuery(){
    var query = document.getElementById('q').value.trim();
@@ -255,6 +348,7 @@
      document.getElementById('vt-source').className = '';
      if (controls) controls.autoRotate = false;
      buildLegend(); repaint();
+     renderResultsList(resp.matches);
      statusEl.textContent = resp.matches.length + ' matches highlighted';
    }).catch(function(err){
      statusEl.textContent = 'Search failed: ' + err.message;
@@ -271,12 +365,14 @@
  }
  loop();
 
- window.addEventListener('resize', function(){
-   var w = panel.clientWidth;
-   renderer.setSize(w, H);
-   camera.aspect = w / H;
+ function onResize(){
+   W = panel.clientWidth; H = panel.clientHeight;
+   renderer.setSize(W, H);
+   camera.aspect = W / H;
    camera.updateProjectionMatrix();
- });
+ }
+ window.addEventListener('resize', onResize);
+ window.addEventListener('orientationchange', function(){ setTimeout(onResize, 200); });
 })();
 </script>
 </body>

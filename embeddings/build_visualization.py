@@ -67,12 +67,26 @@ def main():
     vectors = np.array([r.embedding for r in rows], dtype=np.float32)
 
     logger.info("Fitting UMAP(n_components=3, metric='cosine')")
-    reducer = UMAP(n_components=3, metric="cosine", random_state=42)
+    # min_dist/spread pushed up from UMAP's tight defaults (0.1/1.0) so
+    # points get visible breathing room instead of collapsing into one
+    # dense blob — the whole point is being able to read structure at a
+    # glance, not just proving the projection works.
+    reducer = UMAP(
+        n_components=3,
+        metric="cosine",
+        min_dist=0.5,
+        spread=1.8,
+        n_neighbors=20,
+        random_state=42,
+    )
     raw = reducer.fit_transform(vectors)
 
     center = raw.mean(axis=0)
     radii  = np.linalg.norm(raw - center, axis=1)
-    scale  = float(1.2 / np.percentile(radii, 95))
+    # Target radius is deliberately generous: with ~4700 points, a small
+    # container makes them overlap regardless of local UMAP spacing params
+    # (volume scales with radius^3, so this buys real breathing room).
+    scale  = float(2.4 / np.percentile(radii, 95))
 
     coords = (raw - center) * scale
 
