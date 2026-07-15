@@ -1,6 +1,33 @@
 # Oral Cancer RAG
 
+![Python](https://img.shields.io/badge/python-3.13-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)
+![pgvector](https://img.shields.io/badge/pgvector-enabled-336791)
+![Three.js](https://img.shields.io/badge/Three.js-black?logo=three.js&logoColor=white)
+
 A retrieval-augmented generation system over peer-reviewed oral cancer research — abstracts, full-text papers, and figure captions, semantically searchable and grounded, with a live 3D map of the entire embedding space.
+
+## Tech stack
+
+Postgres + `pgvector` · SQLAlchemy · FastAPI · `sentence-transformers` (`pritamdeka/S-PubMedBert-MS-MARCO`) · PyMuPDF · UMAP · Three.js · Google Gemini (answer generation)
+
+## The corpus, in numbers
+
+Everything below reflects one full run of the ingestion pipeline against Semantic Scholar's oral squamous cell carcinoma literature:
+
+| Stage | Count | Notes |
+|---|---:|---|
+| Papers discovered & finalized | 146 | Semantic Scholar search, deduped, junk/off-topic filtered, manually curated |
+| Open-access PDFs downloaded | 79 | 54% of 146 — the rest are paywalled or blocked (403/404) at their host |
+| Papers with extracted full text | 79 | Cleaned, chunked, garbage-filtered (references, license boilerplate, etc.) |
+| Papers with extracted figures | 79 | |
+| Figure images rendered | 590 | Pages with real visual content, across those 79 papers |
+| Figure captions matched to a real image | 403 | 403 / 403 verified on disk — 0 orphaned captions |
+| **Abstract embeddings** | **146** | `source='abstract'` |
+| **Full-text chunk embeddings** | **4,117** | `source='fulltext'` |
+| **Figure-caption embeddings** | **403** | `source='figure_captions'` |
+| **Total rows in Postgres** | **4,666** | one 768-dim `pgvector` embedding each |
 
 ## Demo
 
@@ -64,7 +91,7 @@ static/visualize.html           the 3D viewer — Three.js, no build step, no fr
 ## Setup
 
 ```bash
-git clone <this-repo>
+git clone https://github.com/KEYUR141/Oral-Cancer-X-AI-Integrated-Solution.git
 cd Oral-Cancer-X-AI-Integrated-Solution
 python -m venv env && env\Scripts\activate      # or source env/bin/activate on Linux/Mac
 pip install -r requirements.txt
@@ -108,10 +135,6 @@ uvicorn app.main:app --reload
 | GET    | `/visualize`          | The 3D embedding-space viewer page                                    |
 | GET    | `/visualize/manifest` | Precomputed points + metadata for the initial render                  |
 | POST   | `/visualize/query`    | Embed a query, project it into the same 3D space, return matches      |
-
-## Tech stack
-
-Postgres + `pgvector` · SQLAlchemy · FastAPI · `sentence-transformers` (`pritamdeka/S-PubMedBert-MS-MARCO`) · PyMuPDF · UMAP · Three.js · Google Gemini (answer generation)
 
 ## Notes
 
